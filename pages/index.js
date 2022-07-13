@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useState,Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics, Debug } from '@react-three/cannon'
+import { v4 as uuidv4 } from 'uuid';
 import css from "../styles/Home.module.css";
+import OrbitControls  from "../components/OrbitControls";
+import SpotLight from "../components/SpotLight";
 import Floor from "../components/Floor";
 import Box from "../components/Box";
 import Die from "../components/Die";
-import LightBulb from "../components/LightBulb";
-import OrbitControls  from "../components/OrbitControls";
-import {Suspense} from "react";
-import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
 
@@ -49,8 +48,7 @@ export default function Home() {
           position: [0, 10, 15],
         }}
       >
-        <ambientLight color={"white"} intensity={0.3} />
-        <LightBulb position={[10, 50, 10]} />
+        <SpotLight />        
         <Physics iterations={6}>          
           <Floor />
           <Box />
