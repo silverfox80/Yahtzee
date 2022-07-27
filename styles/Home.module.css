@@ -6,3 +6,12 @@
 .canvas{
     background: #000;
 }
+
+.right{
+    float:right;
+}
+
+.round{
+    font-weight: bold;
+    margin-left: 20px;
+}
