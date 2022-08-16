@@ -1,4 +1,4 @@
-import React, { useState,Suspense,useRef } from "react";
+import React, { useState,Suspense,useRef,useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics, Debug } from '@react-three/cannon'
 import { v4 as uuidv4 } from 'uuid';
@@ -16,11 +16,18 @@ export default function Home() {
   const [diceIndexAvailable,setDiceIndexAvailable] = useState([1,2,3,4,5])
   const [diceSelected,setDiceSelected] = useState([{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}])
 
+
   const onDebugBtnClick = () => {
     console.log('ROUND:',round)
     console.log('DICE_LIST:',diceList)
     console.log('DICE_INDEX_AVAILABLE:',diceIndexAvailable)
     console.log('DICE_SELECTION:',diceSelected)    
+  }
+
+  async function onRollAllBtnClick () {
+    //needs further understanding
+    await sleep(20000);
+    //
   }
 
   const onRollBtnClick = () => { 
@@ -42,7 +49,6 @@ export default function Home() {
         <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
       ));
     }
-    
   }
   
   const onClearBtnClick = () => {
@@ -84,22 +90,28 @@ export default function Home() {
     
   }
 
+  const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   let group = useRef()
 
   return (
     <div className={css.scene}>
       <div>
-        <button onClick={onRollBtnClick}>Roll dice</button>
-        <button onClick={onClearBtnClick}>Clear dice</button>
+        <button disabled={true} onClick={onRollAllBtnClick}>Roll All Dice</button>
+        <button onClick={onRollBtnClick}>Roll One Die</button>
+        <button onClick={onClearBtnClick}>Clear All Dice</button>
         <button onClick={onDebugBtnClick}>Debug Info Console</button>
         <span className={css.round}>ROUND {round}</span>
         <span className={css.right}><b>HINT</b>: Select the dice you want to keep!</span>
       </div>
+      <div className={css.scoresheet}>here</div>
       <Canvas
         shadows={true}
         className={css.canvas}
         camera={{
-          position: [0, 10, 15],
+          position: [0, 10, 17],
         }}
       >
         <SpotLight />        

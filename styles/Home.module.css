@@ -1,6 +1,7 @@
 .scene{
-    width:99vw;
+    width:79vw;
     height:97vh;
+    float:right;
 }
 
 .canvas{
@@ -14,4 +15,17 @@
 .round{
     font-weight: bold;
     margin-left: 20px;
+}
+
+.scoresheet{
+    background-image: url('/images/score-sheet.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 20vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+    color:white;
 }
