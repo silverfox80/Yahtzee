@@ -8,6 +8,7 @@ import SpotLight from "../components/SpotLight";
 import Floor from "../components/Floor";
 import Box from "../components/Box";
 import DieWrapper from "../components/DieWrapper";
+import ScoreSheet from "../components/ScoreSheet";
 
 export default function Home() {
 
@@ -15,7 +16,11 @@ export default function Home() {
   const [diceList, setDiceList] = useState([])
   const [diceIndexAvailable,setDiceIndexAvailable] = useState([1,2,3,4,5])
   const [diceSelected,setDiceSelected] = useState([{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}])
-
+  const [score,setScore] = useState({ "Aces":"5","Twos":"10","Threes":"15","Fours":"20","Fives":"25","Sixes":"30",
+                                      "TotalScore":"105","Bonus":"35","TotalScoreUpperSection":"140",
+                                      "ThreeOfAKind":"30","FourOfAKind":"30","FullHouse":"30","SmStraight":"30","LgStraight":"40",
+                                      "Yahtzee":"50","Chance":"30","TotalUpper":"140","TotalLower":"240","Total":"380"
+                                    })
 
   const onDebugBtnClick = () => {
     console.log('ROUND:',round)
@@ -105,8 +110,8 @@ export default function Home() {
         <button onClick={onDebugBtnClick}>Debug Info Console</button>
         <span className={css.round}>ROUND {round}</span>
         <span className={css.right}><b>HINT</b>: Select the dice you want to keep!</span>
-      </div>
-      <div className={css.scoresheet}>here</div>
+      </div>      
+      <ScoreSheet scoreArray={score} />
       <Canvas
         shadows={true}
         className={css.canvas}
