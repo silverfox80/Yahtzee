@@ -18,7 +18,7 @@ class DieWrapper extends React.Component {
       this.setState(prevState => ({
         active: !prevState.active
       }));
-    }    
+    }
 
     render() {      
       return (

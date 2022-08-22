@@ -1,4 +1,4 @@
-import React, {useEffect,useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 import { Physics, usePlane, useBox } from '@react-three/cannon'
@@ -55,7 +55,8 @@ function Die(props) {
   const getInfo = () => { 
     setActive(!active)
     !active?api.mass.set(20):api.mass.set(2)  //make it ten times heavier when selected so that other dice will collide with it without moving it
-    console.log(`The die (${props.index}) with position ${pos.current} has value ${check_dice(radians_to_degrees(rot.current))} has been ${!active?'selected':'unselected'}`)      
+    //console.log(`The die (${props.index}) with position ${pos.current} has value ${check_dice(radians_to_degrees(rot.current))} and has been ${!active?'selected':'unselected'}`)      
+    window.localStorage.setItem(`die_${props.index}`,check_dice(radians_to_degrees(rot.current)))
   }
 
   const velocity = useRef([0, 0, 0])

@@ -11,22 +11,27 @@ import DieWrapper from "../components/DieWrapper";
 import ScoreSheet from "../components/ScoreSheet";
 
 export default function Home() {
-
+  //Hooks
   const [round, setRound] = useState(1)
   const [diceList, setDiceList] = useState([])
   const [diceIndexAvailable,setDiceIndexAvailable] = useState([1,2,3,4,5])
-  const [diceSelected,setDiceSelected] = useState([{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}])
-  const [score,setScore] = useState({ "Aces":"5","Twos":"10","Threes":"15","Fours":"20","Fives":"25","Sixes":"30",
-                                      "TotalScore":"105","Bonus":"35","TotalScoreUpperSection":"140",
-                                      "ThreeOfAKind":"30","FourOfAKind":"30","FullHouse":"30","SmStraight":"30","LgStraight":"40",
-                                      "Yahtzee":"50","Chance":"30","TotalUpper":"140","TotalLower":"240","Total":"380"
+  const [diceSelected,setDiceSelected] = useState([ {die:1,active:false,value:0},{die:2,active:false,value:0},{die:3,active:false,value:0},
+                                                    {die:4,active:false,value:0},{die:5,active:false,value:0}])
+  const [score,setScore] = useState({ "Aces":"0","Twos":"0","Threes":"0","Fours":"0","Fives":"0","Sixes":"0",
+                                      "TotalUpperNoBonus":"0","Bonus":"0",
+                                      "ThreeOfAKind":"0","FourOfAKind":"0","FullHouse":"0","SmStraight":"0","LgStraight":"0",
+                                      "Yahtzee":"0","Chance":"0","TotalUpper":"0","TotalLower":"0","Total":"0"
                                     })
 
+  let group = useRef()
+
+  //Event Handlers
   const onDebugBtnClick = () => {
     console.log('ROUND:',round)
     console.log('DICE_LIST:',diceList)
     console.log('DICE_INDEX_AVAILABLE:',diceIndexAvailable)
-    console.log('DICE_SELECTION:',diceSelected)    
+    console.log('DICE_SELECTION:',diceSelected)
+    console.log('DICE_SCORE:',score)  
   }
 
   async function onRollAllBtnClick () {
@@ -54,6 +59,7 @@ export default function Home() {
         <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
       ));
     }
+
   }
   
   const onClearBtnClick = () => {
@@ -61,6 +67,12 @@ export default function Home() {
     setDiceIndexAvailable([1,2,3,4,5])
     setDiceSelected([{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}])
     setRound(1)
+    setScore({ "Aces":"0","Twos":"0","Threes":"0","Fours":"0","Fives":"0","Sixes":"0",
+                                      "TotalScore":"0","Bonus":"0","TotalScoreUpperSection":"0",
+                                      "ThreeOfAKind":"0","FourOfAKind":"0","FullHouse":"0","SmStraight":"0","LgStraight":"0",
+                                      "Yahtzee":"0","Chance":"0","TotalUpper":"0","TotalLower":"0","Total":"0"
+                                    })
+    localStorage.clear();
     console.clear()
   }
 
@@ -91,15 +103,131 @@ export default function Home() {
     })
 
     diceSelected.find(e => e.die === index).active = !selectedDie[0].active
+    diceSelected.find(e => e.die === index).value = localStorage.getItem(`die_${selectedDie[0].die}`)
     setDiceSelected(diceSelected)
-    
+    //console.log(selectedDie)   
+    calculateScore() 
   }
+
+  //Helper Functions
+  const calculateScore = () => {
+    let diceFaceRepeated = [0,0,0,0,0,0] //how many 1, how many 2, how many 3....
+    let diceValues = [0,0,0,0,0]
+    let isTris = false
+    let isPoker = false
+    let isFullHouse = false
+    let isShortStraight = false
+    let isFullStraight = false
+    let isYahtzee = false
+    //chance
+    let chance = 0;
+    diceSelected.forEach(el => {
+      diceValues[(el.die)-1]= (parseInt(el.value))
+      chance += parseInt(el.value)
+      diceFaceRepeated[(el.value)-1]++
+    });
+    score.Chance = String(chance)
+    //
+    diceFaceRepeated.forEach((v,index) => {
+      switch(index) {
+        case 0:
+          score.Aces = String(v)
+          if (score.Aces >= 3) isTris = true
+          if (score.Aces >= 4) isPoker = true
+          if (score.Aces >= 5) isYahtzee = true
+          break
+        case 1:
+          score.Twos = String(v*2)
+          if (score.Twos / 2 >= 3) isTris = true
+          if (score.Twos / 2 >= 4) isPoker = true
+          if (score.Twos / 2 >= 5) isYahtzee = true
+          break
+        case 2:
+          score.Threes = String(v*3)
+          if (score.Threes / 3 >= 3) isTris = true
+          if (score.Threes / 3 >= 4) isPoker = true
+          if (score.Threes / 3 >= 5) isYahtzee = true
+          break
+        case 3:
+          score.Fours = String(v*4)
+          if (score.Fours / 4 >= 3) isTris = true
+          if (score.Fours / 4 >= 4) isPoker = true
+          if (score.Fours / 4 >= 5) isYahtzee = true
+          break
+        case 4:
+          score.Fives = String(v*5)
+          if (score.Fives / 5 >= 3) isTris = true
+          if (score.Fives / 5 >= 4) isPoker = true
+          if (score.Fives / 5 >= 5) isYahtzee = true
+          break
+        case 5:
+          score.Sixes = String(v*6)
+          if (score.Sixes / 6 >= 3) isTris = true
+          if (score.Sixes / 6 >= 4) isPoker = true
+          if (score.Sixes / 6 >= 5) isYahtzee = true
+          break
+        default:
+          break
+      }
+    });
+    //Tris, Poker, Yahtzee
+    score.ThreeOfAKind = isTris ? String(chance) : "0"
+    score.FourOfAKind = isPoker ? String(chance) : "0"
+    score.Yahtzee = isYahtzee ? "50" : "0"
+    //Full House
+    if (diceFaceRepeated.includes(3) && diceFaceRepeated.includes(2)) isFullHouse = true
+    score.FullHouse = (isFullHouse || isYahtzee) ? "25" : "0"
+    //Straights
+    const zeros = countOccurrences(diceValues,0)
+    
+    if (zeros == 0) {
+      diceValues.sort(function(a, b) {
+        return a - b;
+      })
+      //check full straight
+      const differenceAry = diceValues.slice(1).map(function(n, i) { return n - diceValues[i]; })
+      const isDifference= differenceAry.every(value => value == 1)
+      isFullStraight = isDifference
+      //check small straight (4 on 5)
+      const uniqArr = diceValues.filter(function(item, pos, ary) {
+        return !pos || item != ary[pos - 1]
+      })
+      if(uniqArr.length == 4) {
+        //console.log(uniqArr)
+        const SMdifferenceAry = uniqArr.sort().slice(1).map(function(n, i) { return n - diceValues[i]; })
+        const SMisDifference= SMdifferenceAry.every(value => value == 1)
+        isShortStraight = SMisDifference
+      }
+    }
+    
+    score.SmStraight = isShortStraight ? "30" : "0"
+    score.LgStraight = isFullStraight ? "40" : "0"
+
+    console.log(score)
+
+  }
+
+  const calculateTotal = () => {
+    upperScore = parseInt(score.Aces) + parseInt(score.Twos) + parseInt(score.Threes) + parseInt(score.Fours) + parseInt(score.Fives) + parseInt(score.Sixes)
+    lowerScore = parseInt(score.ThreeOfAKind) + parseInt(score.FourOfAKind) + parseInt(score.SmStraight) + parseInt(score.LgStraight) + parseInt(score.Yahtzee) + parseInt(score.Chance)
+    totalScore = upperScore>=63 ? upperScore+lowerScore+35 : upperScore+lowerScore
+    //Upper Score
+    score.TotalUpperNoBonus = String(upperScore)
+    score.Bonus = upperScore>=63 ? "35" : "0"
+    score.TotalUpper = upperScore>=63 ? String(upperScore+35) : upperScore
+    //Lower Score
+    score.TotalLower = String(lowerScore)
+    //Total Score
+    score.TotalScore = String(totalScore)
+  }
+
+  const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0)
 
   const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
-  let group = useRef()
+  
+  // 
 
   return (
     <div className={css.scene}>
