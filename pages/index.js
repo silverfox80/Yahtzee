@@ -11,18 +11,20 @@ import DieWrapper from "../components/DieWrapper";
 import ScoreSheet from "../components/ScoreSheet";
 
 export default function Home() {
+  const empty_score = { "Aces":"0","Twos":"0","Threes":"0","Fours":"0","Fives":"0","Sixes":"0",
+                        "TotalUpperNoBonus":"0","Bonus":"0",
+                        "ThreeOfAKind":"0","FourOfAKind":"0","FullHouse":"0","SmStraight":"0","LgStraight":"0",
+                        "Yahtzee":"0","Chance":"0",
+                        "TotalUpper":"0","TotalLower":"0","Total":"0" }
   //Hooks
   const [round, setRound] = useState(1)
   const [diceList, setDiceList] = useState([])
   const [diceIndexAvailable,setDiceIndexAvailable] = useState([1,2,3,4,5])
   const [diceSelected,setDiceSelected] = useState([ {die:1,active:false,value:0},{die:2,active:false,value:0},{die:3,active:false,value:0},
                                                     {die:4,active:false,value:0},{die:5,active:false,value:0}])
-  const [score,setScore] = useState({ "Aces":"0","Twos":"0","Threes":"0","Fours":"0","Fives":"0","Sixes":"0",
-                                      "TotalUpperNoBonus":"0","Bonus":"0",
-                                      "ThreeOfAKind":"0","FourOfAKind":"0","FullHouse":"0","SmStraight":"0","LgStraight":"0",
-                                      "Yahtzee":"0","Chance":"0","TotalUpper":"0","TotalLower":"0","Total":"0"
-                                    })
-
+  const [score,setScore] = useState(empty_score)
+  const [allDiceSelected,setAllDiceSelected] = useState(false)
+  
   let group = useRef()
 
   //Event Handlers
@@ -57,22 +59,19 @@ export default function Home() {
     if (index && round<=3) {
       setDiceList(diceList.concat(
         <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
-      ));
+      ));      
     }
-
   }
   
   const onClearBtnClick = () => {
+    
+    resetScore()
     setDiceList([])
     setDiceIndexAvailable([1,2,3,4,5])
     setDiceSelected([{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}])
-    setRound(1)
-    setScore({ "Aces":"0","Twos":"0","Threes":"0","Fours":"0","Fives":"0","Sixes":"0",
-                                      "TotalScore":"0","Bonus":"0","TotalScoreUpperSection":"0",
-                                      "ThreeOfAKind":"0","FourOfAKind":"0","FullHouse":"0","SmStraight":"0","LgStraight":"0",
-                                      "Yahtzee":"0","Chance":"0","TotalUpper":"0","TotalLower":"0","Total":"0"
-                                    })
-    localStorage.clear();
+    setRound(1)    
+    
+    localStorage.clear()
     console.clear()
   }
 
@@ -103,13 +102,24 @@ export default function Home() {
     })
 
     diceSelected.find(e => e.die === index).active = !selectedDie[0].active
-    diceSelected.find(e => e.die === index).value = localStorage.getItem(`die_${selectedDie[0].die}`)
+    diceSelected.find(e => e.die === index).value = selectedDie[0].active ? 
+                                                    localStorage.getItem(`die_${selectedDie[0].die}`) : 
+                                                    localStorage.setItem(`die_${selectedDie[0].die}`,0)
+    //set state
     setDiceSelected(diceSelected)
-    //console.log(selectedDie)   
-    calculateScore() 
+    //re-calculate score
+    calculateScore()
+    checkAllDiceSelected()
   }
 
   //Helper Functions
+  const resetScore = () => {
+    
+    Object.keys(score).map(key => {
+      score[key] = "0"
+    })
+  }
+
   const calculateScore = () => {
     let diceFaceRepeated = [0,0,0,0,0,0] //how many 1, how many 2, how many 3....
     let diceValues = [0,0,0,0,0]
@@ -203,7 +213,7 @@ export default function Home() {
     score.SmStraight = isShortStraight ? "30" : "0"
     score.LgStraight = isFullStraight ? "40" : "0"
 
-    console.log(score)
+    //console.log(score)
 
   }
 
@@ -221,44 +231,58 @@ export default function Home() {
     score.TotalScore = String(totalScore)
   }
 
+  const checkAllDiceSelected = () => {
+    let count = 0;
+    Object.values(diceSelected).map(val => {
+      if (val['active'])  count++    
+    })
+    count == 5 ?
+      setAllDiceSelected(true) :
+      setAllDiceSelected(false)
+  }
+
   const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0)
 
   const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
   
-  // 
+  //
 
   return (
-    <div className={css.scene}>
-      <div>
-        <button disabled={true} onClick={onRollAllBtnClick}>Roll All Dice</button>
-        <button onClick={onRollBtnClick}>Roll One Die</button>
-        <button onClick={onClearBtnClick}>Clear All Dice</button>
-        <button onClick={onDebugBtnClick}>Debug Info Console</button>
-        <span className={css.round}>ROUND {round}</span>
-        <span className={css.right}><b>HINT</b>: Select the dice you want to keep!</span>
-      </div>      
-      <ScoreSheet scoreArray={score} />
-      <Canvas
-        shadows={true}
-        className={css.canvas}
-        camera={{
-          position: [0, 10, 17],
-        }}
-      >
-        <SpotLight />        
-        <Physics iterations={6}>          
-          <Floor />
-          <Box />
-          <Suspense fallback={null}>
-            <group ref={group} onClick={(e)=>onClickSelect(e.object.index)}>
-              {diceList}
-            </group>
-          </Suspense>
-          <OrbitControls />  
-        </Physics>        
-      </Canvas>
+    <div className={css.container}>
+      <div className={css.columnRight}>
+        <div className={css.controls}>
+          <button disabled={true} onClick={onRollAllBtnClick}>Roll All Dice</button>
+          <button onClick={onRollBtnClick}>Roll One Die</button>
+          <button onClick={onClearBtnClick}>Clear All Dice</button>
+          <button onClick={onDebugBtnClick}>Debug Info Console</button>
+          <span className={css.round}>ROUND {round}</span>
+          <span className={css.right}><b>HINT</b>: Select the dice you want to keep!</span>
+        </div>
+        <Canvas
+          shadows={true}
+          className={css.canvas}
+          camera={{
+            position: [0, 10, 17],
+          }}
+        >
+          <SpotLight />        
+          <Physics iterations={6}>          
+            <Floor />
+            <Box />
+            <Suspense fallback={null}>
+              <group ref={group} onClick={(e)=>onClickSelect(e.object.index)}>
+                {diceList}
+              </group>
+            </Suspense>
+            <OrbitControls />  
+          </Physics>        
+        </Canvas>
+      </div>
+      <div className={css.columnLeft}>
+        <ScoreSheet scoreArray={score} />
+      </div>
     </div>
   );
 }

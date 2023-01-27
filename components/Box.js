@@ -29,46 +29,46 @@ function Box(props) {
   texture_edge.wrapS = MirroredRepeatWrapping;
   texture_edge.repeat.set(2, 1);
   texture_edge.needsUpdate = true;
-  const texture_plank = useLoader(TextureLoader, "textures/wood/wood_texture_by_reaperofblood_db3irh.jpg")
+  const texture_plank = useLoader(TextureLoader, "textures/wood/rustic-brown-wood-textured-background-design.jpg")
   texture_plank.wrapS = MirroredRepeatWrapping;
   texture_plank.repeat.set(19, 1);
   texture_plank.needsUpdate = true;
-  const texture_mat = useLoader(TextureLoader, "textures/pooltable/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHg5MDgxMDUtaW1hZ2Uta3d5bzUwamkuanBn.webp");
+  const texture_mat = useLoader(TextureLoader, "textures/pooltable/dark-green-wall.jpg");
 
   return (
     <group ref={ref}>
       {/* Lateral planks*/}
       <mesh castShadow receiveShadow position={[0,0.5,10]} roughness={0.1}>
-        <boxGeometry args={[19,1,1]} />      
+        <boxGeometry args={[19,2,1]} />      
         <meshPhysicalMaterial map={texture_plank} color={"white"} />
       </mesh>
       <mesh castShadow receiveShadow position={[0,0.5,-10]}>
-        <boxGeometry args={[19,1,1]} />      
+        <boxGeometry args={[19,2,1]} />      
         <meshPhysicalMaterial map={texture_plank} color={"white"} />
       </mesh>
       <mesh castShadow receiveShadow position={[10,0.5,0]} rotation={[ 0, Math.PI / 2,0]}>
-        <boxGeometry args={[19,1,1]} />      
+        <boxGeometry args={[19,2,1]} />      
         <meshPhysicalMaterial map={texture_plank} color={"white"} />
       </mesh>
       <mesh castShadow receiveShadow position={[-10,0.5,0]} rotation={[ 0, Math.PI / 2,0]}>
-        <boxGeometry args={[19,1,1]} />      
+        <boxGeometry args={[19,2,1]} />      
         <meshPhysicalMaterial map={texture_plank} color={"white"} />
       </mesh>
       {/*  Edges */}
       <mesh castShadow receiveShadow position={[10,0,-10]} rotation={[ 0, 0, Math.PI / 2]}>
-        <boxGeometry args={[2,1,1]} />      
+        <boxGeometry args={[3,1,1]} />      
         <meshPhysicalMaterial map={texture_edge} color={"white"} />
       </mesh>
       <mesh castShadow receiveShadow position={[-10,0,-10]} rotation={[ 0, 0, Math.PI / 2]}>
-        <boxGeometry args={[2,1,1]} />      
+        <boxGeometry args={[3,1,1]} />      
         <meshPhysicalMaterial map={texture_edge} color={"white"} />
       </mesh>
       <mesh castShadow receiveShadow position={[10,0,10]} rotation={[ 0, 0, Math.PI / 2]}>
-        <boxGeometry args={[2,1,1]} />      
+        <boxGeometry args={[3,1,1]} />      
         <meshPhysicalMaterial map={texture_edge} color={"white"} />
       </mesh>
       <mesh castShadow receiveShadow position={[-10,0,10]} rotation={[ 0, 0, Math.PI / 2]}>
-        <boxGeometry args={[2,1,1]} />      
+        <boxGeometry args={[3,1,1]} />      
         <meshPhysicalMaterial map={texture_edge} color={"white"} />
       </mesh>
       {/* Mat */}

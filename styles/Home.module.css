@@ -1,7 +1,32 @@
-.scene{
-    width:79vw;
-    height:97vh;
-    float:right;
+.container {
+    position: absolute;
+    top:0px;
+    left:0px;
+    height: 100%;
+    background-color:grey;
+}
+
+.columnRight{
+    float: right;
+    width: 80vw;
+    height: calc(100% - 40px);
+    background:#FDECDC;
+}
+  
+.columnLeft{
+    float: left;
+    min-width: 270px;
+    width:20vw;
+}
+
+.controls {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    padding: 4px 5px 4px 0px;
+}
+
+.controls > button {
+    margin: 5px 6px 5px 15px;
+    border-radius: 5px;    
 }
 
 .canvas{
@@ -17,21 +42,27 @@
     margin-left: 20px;
 }
 /* SCORESHEET MAPPING */
-.scoresheet{
-    background-image: url('/images/score-sheet-mod.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-width: 360px;
-    max-width: 360px;
-    max-height: 1056px;
-    height: 100vh;
+.scoresheetWrapper{
+    box-sizing: border-box;
+    overflow: hidden;
     position: fixed;
     top: 0;
     left: 0;
+    width: 345px;
+    min-height: 800px;
+    max-height: 1600px;
+}
+
+.scoresheet{
+    background-image: url('/images/score-sheet-mod.jpg');
+    background-repeat:no-repeat;
+    background-size: cover;
+    height: 100vh;
     z-index: 10;
-    color:black;
-    border-right:2px solid black;
-    border-bottom:2px solid black;
+}
+
+.scoresheet_score_taken{
+    color:red
 }
 
 .scoresheet_Aces{
@@ -40,7 +71,7 @@
     max-height: 44px;
     display: inline-block;
     position: relative;
-    top: 135px;
+    top: 128px;
     left: 296px;
     z-index: 9;
     /*background-color: aqua;*/
@@ -50,13 +81,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Aces:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Twos{
     min-width: 64px;
     min-height: 44px;
     max-height: 44px;
     display: inline-block;
     position: relative;
-    top: 185px;
+    top: 177px;
     left: 232px;
     z-index: 9;
     /*background-color:brown;*/
@@ -66,13 +105,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Twos:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Threes{
     min-width: 64px;
     min-height: 44px;
     max-height: 44px;
     display: inline-block;
     position: relative;
-    top: 235px;
+    top: 226px;
     left: 168px;
     z-index: 9;
     /*background-color:blueviolet;*/
@@ -82,13 +129,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Threes:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Fours{
     min-width: 64px;
     min-height: 44px;
     max-height: 44px;
     display: inline-block;
     position: relative;
-    top: 286px;
+    top: 273px;
     left: 104px;
     z-index: 9;
     /*background-color:chartreuse;*/
@@ -98,13 +153,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Fours:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Fives{
     min-width: 64px;
     min-height: 44px;
     max-height: 44px;
     display: inline-block;
     position: relative;
-    top: 336px;
+    top: 320px;
     left: 40px;
     z-index: 9;
     /*background-color:chocolate;*/
@@ -114,13 +177,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Fives:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Sixes{
     min-width: 64px;
     min-height: 43px;
     max-height: 43px;
     display: inline-block;
     position: relative;
-    top: 338px;
+    top: 317px;
     left: 296px;
     z-index: 9;
     /*background-color:darkcyan;*/
@@ -130,13 +201,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Sixes:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_TotalUpperNoBonus{
     min-width: 64px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 388px;
+    top: 359px;
     left: 232px;
     z-index: 9;
     /*background-color:red;*/
@@ -152,7 +231,7 @@
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 430px;
+    top: 399px;
     left: 168px;
     z-index: 9;
     /*background-color:aquamarine;*/
@@ -168,7 +247,7 @@
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 470px;
+    top: 438px;
     left: 104px;
     z-index: 9;
     /*background-color:darkblue;*/
@@ -184,7 +263,7 @@
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 547px;
+    top: 508px;
     left: 39px;
     z-index: 9;
     /*background-color:blueviolet;*/
@@ -194,13 +273,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_ThreeOfAKind:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_FourOfAKind{
     min-width: 65px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 542px;
+    top: 502px;
     left: 295px;
     z-index: 9;
     /*background-color:aqua;*/
@@ -210,13 +297,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_FourOfAKind:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_FullHouse{
     min-width: 65px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 584px;
+    top: 542px;
     left: 230px;
     z-index: 9;
     /*background-color:cornflowerblue;*/
@@ -226,13 +321,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_FullHouse:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_SmStraight{
     min-width: 65px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 626px;
+    top: 582px;
     left: 165px;
     z-index: 9;
     /*background-color:chocolate;*/
@@ -242,13 +345,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_SmStraight:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_LgStraight{
     min-width: 65px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 669px;
+    top: 622px;
     left: 100px;
     z-index: 9;
     /*background-color:yellowgreen;*/
@@ -258,13 +369,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_LgStraight:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Yahtzee{
     min-width: 65px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 711px;
+    top: 662px;
     left: 35px;
     z-index: 9;
     /*background-color:darkorange;*/
@@ -274,13 +393,21 @@
     padding-top: 5px;
 }
 
+.scoresheet_Yahtzee:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_Chance{
     min-width: 65px;
     min-height: 36px;
     max-height: 36px;
     display: inline-block;
     position: relative;
-    top: 712px;
+    top: 662px;
     left: 295px;
     z-index: 9;
     /*background-color:gold;*/
@@ -290,14 +417,22 @@
     padding-top: 5px;
 }
 
+.scoresheet_Chance:hover:not(.scoresheet_score_taken){
+    background-image: url('/images/circle-red.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: 0px -10px;
+    cursor:pointer;
+}
+
 .scoresheet_TotalUpper{
     min-width: 187px;
     min-height: 42px;
     max-height: 42px;
     display: inline-block;
     position: relative;
-    top: 756px;
-    left: 108px;
+    top: 705px;
+    left: 115px;
     z-index: 9;
     /*background-color:blueviolet;*/
     font-size: xx-large;
@@ -312,8 +447,8 @@
     max-height: 42px;
     display: inline-block;
     position: relative;
-    top: 760px;
-    left: 173px;
+    top: 705px;
+    left: 180px;
     z-index: 9;
     /*background-color:aquamarine;*/
     font-size: xx-large;
@@ -328,12 +463,13 @@
     max-height: 57px;
     display: inline-block;
     position: relative;
-    top: 762px;
-    left: 173px;
+    top: 700px;
+    left: 180px;
     z-index: 9;
     /*background-color:blue;*/
-    font-size: xxx-large;
+    font-size: xx-large;
     font-style: italic;
     text-align: center;
     padding-top: 5px;
 }
+
