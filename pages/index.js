@@ -11,11 +11,11 @@ import DieWrapper from "../components/DieWrapper";
 import ScoreSheet from "../components/ScoreSheet";
 
 export default function Home() {
-  const empty_score = { "Aces":"0","Twos":"0","Threes":"0","Fours":"0","Fives":"0","Sixes":"0",
-                        "TotalUpperNoBonus":"0","Bonus":"0",
-                        "ThreeOfAKind":"0","FourOfAKind":"0","FullHouse":"0","SmStraight":"0","LgStraight":"0",
-                        "Yahtzee":"0","Chance":"0",
-                        "TotalUpper":"0","TotalLower":"0","Total":"0" }
+
+  const empty_score = new Map([['Aces',0],["Twos",0],["Threes",0],["Fours",0],["Fives",0],["Sixes",0],
+                               ["TotalUpperNoBonus",0],["Bonus",0],
+                               ["ThreeOfAKind",0],["FourOfAKind",0],["FullHouse",0],["SmStraight",0],["LgStraight",0],["Yahtzee",0],["Chance",0],
+                               ["TotalUpper",0],["TotalLower",0],["Total",0]])
   //Hooks
   const [round, setRound] = useState(1)
   const [diceList, setDiceList] = useState([])
@@ -23,8 +23,13 @@ export default function Home() {
   const [diceSelected,setDiceSelected] = useState([ {die:1,active:false,value:0},{die:2,active:false,value:0},{die:3,active:false,value:0},
                                                     {die:4,active:false,value:0},{die:5,active:false,value:0}])
   const [score,setScore] = useState(empty_score)
+  const [confirmedScore,setConfirmedScore] = useState(new Map())
   const [allDiceSelected,setAllDiceSelected] = useState(false)
   
+  useEffect(() => {
+    console.log("UseEffect is called")
+  });
+
   let group = useRef()
 
   //Event Handlers
@@ -33,7 +38,9 @@ export default function Home() {
     console.log('DICE_LIST:',diceList)
     console.log('DICE_INDEX_AVAILABLE:',diceIndexAvailable)
     console.log('DICE_SELECTION:',diceSelected)
-    console.log('DICE_SCORE:',score)  
+    console.log('DICE_SCORE:',score)
+    console.log('DICE_BLOCKED_SCORE:',confirmedScore)  
+
   }
 
   async function onRollAllBtnClick () {
@@ -42,8 +49,9 @@ export default function Home() {
     //
   }
 
-  const onRollBtnClick = () => { 
-
+  const onRollBtnClick = (event) => { 
+    //event.target.classList.add(css.test);
+    //event.target.disabled = true;
     const countDiceOnTable = diceList.filter(value => value !== false).length;
     
     if (countDiceOnTable==5 && diceSelected.some(element => element.active === true) && round<3) {
@@ -114,9 +122,9 @@ export default function Home() {
 
   //Helper Functions
   const resetScore = () => {
-    
-    Object.keys(score).map(key => {
-      score[key] = "0"
+    // Cycling on Map to reset the score
+    score.forEach((value, key) => {
+      score.set(key,0)
     })
   }
 
@@ -136,57 +144,58 @@ export default function Home() {
       chance += parseInt(el.value)
       diceFaceRepeated[(el.value)-1]++
     });
-    score.Chance = String(chance)
+    score.set("Chance",chance)
     //
     diceFaceRepeated.forEach((v,index) => {
       switch(index) {
-        case 0:
-          score.Aces = String(v)
-          if (score.Aces >= 3) isTris = true
-          if (score.Aces >= 4) isPoker = true
-          if (score.Aces >= 5) isYahtzee = true
+        case 0:          
+          score.set("Aces",v)
+          if (score.get("Aces") >= 3) isTris = true
+          if (score.get("Aces") >= 4) isPoker = true
+          if (score.get("Aces") >= 5) isYahtzee = true
           break
         case 1:
-          score.Twos = String(v*2)
-          if (score.Twos / 2 >= 3) isTris = true
-          if (score.Twos / 2 >= 4) isPoker = true
-          if (score.Twos / 2 >= 5) isYahtzee = true
+          score.set("Twos",v*2)
+          if (score.get("Twos") / 2 >= 3) isTris = true
+          if (score.get("Twos") / 2 >= 4) isPoker = true
+          if (score.get("Twos") / 2 >= 5) isYahtzee = true
           break
         case 2:
-          score.Threes = String(v*3)
-          if (score.Threes / 3 >= 3) isTris = true
-          if (score.Threes / 3 >= 4) isPoker = true
-          if (score.Threes / 3 >= 5) isYahtzee = true
+          score.set("Threes",v*3)
+          if (score.get("Threes") / 3 >= 3) isTris = true
+          if (score.get("Threes") / 3 >= 4) isPoker = true
+          if (score.get("Threes") / 3 >= 5) isYahtzee = true
           break
         case 3:
-          score.Fours = String(v*4)
-          if (score.Fours / 4 >= 3) isTris = true
-          if (score.Fours / 4 >= 4) isPoker = true
-          if (score.Fours / 4 >= 5) isYahtzee = true
+          score.set("Fours",v*4)
+          if (score.get("Fours") / 4 >= 3) isTris = true
+          if (score.get("Fours") / 4 >= 4) isPoker = true
+          if (score.get("Fours") / 4 >= 5) isYahtzee = true
           break
         case 4:
-          score.Fives = String(v*5)
-          if (score.Fives / 5 >= 3) isTris = true
-          if (score.Fives / 5 >= 4) isPoker = true
-          if (score.Fives / 5 >= 5) isYahtzee = true
+          score.set("Fives",v*5)
+          if (score.get("Fives") / 5 >= 3) isTris = true
+          if (score.get("Fives") / 5 >= 4) isPoker = true
+          if (score.get("Fives") / 5 >= 5) isYahtzee = true
           break
         case 5:
-          score.Sixes = String(v*6)
-          if (score.Sixes / 6 >= 3) isTris = true
-          if (score.Sixes / 6 >= 4) isPoker = true
-          if (score.Sixes / 6 >= 5) isYahtzee = true
+          score.set("Sixes",v*6)
+          if (score.get("Sixes") / 6 >= 3) isTris = true
+          if (score.get("Sixes") / 6 >= 4) isPoker = true
+          if (score.get("Sixes") / 6 >= 5) isYahtzee = true
           break
         default:
           break
       }
     });
     //Tris, Poker, Yahtzee
-    score.ThreeOfAKind = isTris ? String(chance) : "0"
-    score.FourOfAKind = isPoker ? String(chance) : "0"
-    score.Yahtzee = isYahtzee ? "50" : "0"
+    score.set("ThreeOfAKind",  isTris ? (chance) : 0)
+    score.set("FourOfAKind" ,  isPoker ? (chance) : 0)
+    score.set("Yahtzee"     ,  isYahtzee ? 50 : 0)
     //Full House
     if (diceFaceRepeated.includes(3) && diceFaceRepeated.includes(2)) isFullHouse = true
-    score.FullHouse = (isFullHouse || isYahtzee) ? "25" : "0"
+    score.set("FullHouse" , (isFullHouse || isYahtzee) ? 25 : 0)
+    
     //Straights
     const zeros = countOccurrences(diceValues,0)
     
@@ -210,11 +219,11 @@ export default function Home() {
       }
     }
     
-    score.SmStraight = isShortStraight ? "30" : "0"
-    score.LgStraight = isFullStraight ? "40" : "0"
+    score.set("SmStraight" , isShortStraight ? 30 : 0)
+    score.set("LgStraight" , isFullStraight  ? 40 : 0)
 
     //console.log(score)
-
+    //console.log(blockedScore)
   }
 
   const calculateTotal = () => {
@@ -281,7 +290,7 @@ export default function Home() {
         </Canvas>
       </div>
       <div className={css.columnLeft}>
-        <ScoreSheet scoreArray={score} />
+        <ScoreSheet scoreArray={score} confirmedScoreArray={confirmedScore} onChangeConfirmedScore={(newScore)=>{setConfirmedScore(newScore)}} />
       </div>
     </div>
   );
