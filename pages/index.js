@@ -23,12 +23,32 @@ export default function Home() {
   const [diceSelected,setDiceSelected] = useState([ {die:1,active:false,value:0},{die:2,active:false,value:0},{die:3,active:false,value:0},
                                                     {die:4,active:false,value:0},{die:5,active:false,value:0}])
   const [score,setScore] = useState(empty_score)
-  const [confirmedScore,setConfirmedScore] = useState(new Map())
+  const [fixedScore,setFixedScore] = useState(new Map())
   const [allDiceSelected,setAllDiceSelected] = useState(false)
+  const [lockScore,setLockScore] = useState(true)
   
   useEffect(() => {
-    console.log("UseEffect is called")
-  });
+    console.log('fixedScore- Has changed')  
+    if (lockScore) return
+    resetScore()
+    setDiceList([])
+    setDiceIndexAvailable([1,2,3,4,5])
+    setDiceSelected([{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}])
+    setRound(1)    
+    localStorage.clear()
+    setLockScore(true)
+  },[fixedScore]) // <-- the parameter to listen
+
+  useEffect(() => {    
+    console.log('allDiceSelected- Has changed')
+    if (allDiceSelected) {      
+      setLockScore(false)
+      calculateScore()      
+    } else {
+      setLockScore(true)
+      resetScore()
+    }
+  },[allDiceSelected])
 
   let group = useRef()
 
@@ -39,8 +59,8 @@ export default function Home() {
     console.log('DICE_INDEX_AVAILABLE:',diceIndexAvailable)
     console.log('DICE_SELECTION:',diceSelected)
     console.log('DICE_SCORE:',score)
-    console.log('DICE_BLOCKED_SCORE:',confirmedScore)  
-
+    console.log('DICE_BLOCKED_SCORE:',fixedScore)
+    console.log('LOCK SCORESHEET:',lockScore)
   }
 
   async function onRollAllBtnClick () {
@@ -110,13 +130,16 @@ export default function Home() {
     })
 
     diceSelected.find(e => e.die === index).active = !selectedDie[0].active
+    if (!selectedDie[0].active) localStorage.setItem(`die_${selectedDie[0].die}`,0) //reset local storage value to 0
+    diceSelected.find(e => e.die === index).value = localStorage.getItem(`die_${selectedDie[0].die}`);
+    /*
     diceSelected.find(e => e.die === index).value = selectedDie[0].active ? 
                                                     localStorage.getItem(`die_${selectedDie[0].die}`) : 
                                                     localStorage.setItem(`die_${selectedDie[0].die}`,0)
+                                                    */
     //set state
     setDiceSelected(diceSelected)
-    //re-calculate score
-    calculateScore()
+        
     checkAllDiceSelected()
   }
 
@@ -245,6 +268,7 @@ export default function Home() {
     Object.values(diceSelected).map(val => {
       if (val['active'])  count++    
     })
+    
     count == 5 ?
       setAllDiceSelected(true) :
       setAllDiceSelected(false)
@@ -290,7 +314,7 @@ export default function Home() {
         </Canvas>
       </div>
       <div className={css.columnLeft}>
-        <ScoreSheet scoreArray={score} confirmedScoreArray={confirmedScore} onChangeConfirmedScore={(newScore)=>{setConfirmedScore(newScore)}} />
+        <ScoreSheet scoreArray={score} confirmedScoreArray={fixedScore} lock={lockScore} onChangeScore={(val)=>setFixedScore(val)} />
       </div>
     </div>
   );
