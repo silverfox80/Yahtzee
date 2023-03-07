@@ -26,6 +26,7 @@ export default function Home() {
   const [fixedScore,setFixedScore] = useState(new Map())
   const [allDiceSelected,setAllDiceSelected] = useState(false)
   const [lockScore,setLockScore] = useState(true)
+  const [isRollDisabled,setIsRollDisabled] = useState(false)
   
   useEffect(() => {
     //console.log('fixedScore- Has changed')  
@@ -38,6 +39,7 @@ export default function Home() {
     localStorage.clear()
     setLockScore(true)
     setAllDiceSelected(false)
+    setIsRollDisabled(false)
   },[fixedScore]) // <-- the parameter to listen
 
   useEffect(() => {    
@@ -50,6 +52,11 @@ export default function Home() {
       resetScore()
     }
   },[allDiceSelected])
+  
+  useEffect(() => {    
+    //console.log('round- Has changed')    
+    // if (round == 3) setIsRollDisabled(true)  // Not Working always
+  },[round])
 
   let group = useRef()
   let RollAllButton = useRef()
@@ -94,7 +101,7 @@ export default function Home() {
       setDiceList(diceList.concat(
         <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
       ));      
-    }
+    } 
   }
   
   const onClearBtnClick = () => {
@@ -300,8 +307,8 @@ export default function Home() {
     <div className={css.container}>
       <div className={css.columnRight}>
         <div className={css.controls}>
-          <button disabled={false} onClick={onRollAllBtnClick}>Roll All Dice</button>
-          <button ref={RollAllButton} onClick={onRollBtnClick}>Roll-A-Die</button>
+          <button disabled={isRollDisabled} onClick={onRollAllBtnClick}>Roll All Dice</button>
+          <button disabled={isRollDisabled} ref={RollAllButton} onClick={onRollBtnClick}>Roll-A-Die</button>
           <button disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>
           <button disabled={true} onClick={onDebugBtnClick}>Debug Info Console</button>                    
           <span className={css.round}>ROUND {round}</span>

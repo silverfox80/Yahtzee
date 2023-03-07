@@ -61,7 +61,7 @@
     z-index: 10;
 }
 
-.scoresheet_score_taken{
+.scoresheet_score_taken:not(.total){
     color:red
 }
 
@@ -472,6 +472,6 @@
     text-align: center;
     padding-top: 5px;
 }
-.test {
-    color:red;
+.total {
+    font-weight: bold;
 }
