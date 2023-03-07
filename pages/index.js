@@ -52,6 +52,7 @@ export default function Home() {
   },[allDiceSelected])
 
   let group = useRef()
+  let RollAllButton = useRef()
 
   //Event Handlers
   const onDebugBtnClick = () => {
@@ -65,8 +66,12 @@ export default function Home() {
   }
 
   async function onRollAllBtnClick () {
-    //needs further understanding
-    await sleep(20000);
+    const availableDice = 5 - countDiceSelected()
+    var node = RollAllButton.current
+    for (var i=0;i<availableDice;i++) {
+      node.click()
+      await sleep(1000);
+    }    
     //
   }
 
@@ -264,6 +269,14 @@ export default function Home() {
     score.TotalScore = String(totalScore)
   }
 
+  const countDiceSelected = () => {
+    let count = 0;
+    Object.values(diceSelected).map(val => {
+      if (val['active'])  count++    
+    })
+    return count
+  }
+
   const checkAllDiceSelected = () => {
     let count = 0;
     Object.values(diceSelected).map(val => {
@@ -287,12 +300,12 @@ export default function Home() {
     <div className={css.container}>
       <div className={css.columnRight}>
         <div className={css.controls}>
-          <button disabled={true} onClick={onRollAllBtnClick}>Roll All Dice</button>
-          <button onClick={onRollBtnClick}>Roll One Die</button>
-          <button onClick={onClearBtnClick}>Clear All Dice</button>
-          <button onClick={onDebugBtnClick}>Debug Info Console</button>
+          <button disabled={false} onClick={onRollAllBtnClick}>Roll All Dice</button>
+          <button ref={RollAllButton} onClick={onRollBtnClick}>Roll-A-Die</button>
+          <button disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>
+          <button disabled={true} onClick={onDebugBtnClick}>Debug Info Console</button>                    
           <span className={css.round}>ROUND {round}</span>
-          <span className={css.right}><b>HINT</b>: Select the dice you want to keep!</span>
+          <span className={css.right}><b>HINT</b>: Select the die you want to keep. <br/>Select all dice to set your score. Good luck!</span>
         </div>
         <Canvas
           shadows={true}
