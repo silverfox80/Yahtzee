@@ -28,7 +28,7 @@ export default function Home() {
   const [lockScore,setLockScore] = useState(true)
   
   useEffect(() => {
-    console.log('fixedScore- Has changed')  
+    //console.log('fixedScore- Has changed')  
     if (lockScore) return
     resetScore()
     setDiceList([])
@@ -37,10 +37,11 @@ export default function Home() {
     setRound(1)    
     localStorage.clear()
     setLockScore(true)
+    setAllDiceSelected(false)
   },[fixedScore]) // <-- the parameter to listen
 
   useEffect(() => {    
-    console.log('allDiceSelected- Has changed')
+    //console.log('allDiceSelected- Has changed')
     if (allDiceSelected) {      
       setLockScore(false)
       calculateScore()      

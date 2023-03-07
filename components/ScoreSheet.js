@@ -14,28 +14,24 @@ class ScoreSheet extends React.Component {
     }
     componentWillUnmount() {
       console.log("componentWillUnmount");
-    }
-    
+    }    
     shouldComponentUpdate(nextProps, nextState) {
       console.log("ShouldComponentUpdate");
       return true;
-    }
-    */
+    }    
     componentDidUpdate(nextProps, nextState) {
       //console.log("componentDidUpdate");
     }
-
+    */
     handleClick = (el) => {
       if (this.props.lock) return //if the scoresheet is locked, just exit the function
 
       const newVal = new Map([...this.props.confirmedScoreArray])      
       newVal.set(el.target.id,parseInt(el.target.textContent))
-      this.setState((prevState) => ({
+      this.setState({
         confirmedScore: newVal
-      }));
-
-      this.props.onChangeScore(this.state.confirmedScore)
-      //console.log(this.state)
+      }, () => { this.props.onChangeScore(this.state.confirmedScore) } //callback 
+      );
     }
 
     render() {      
