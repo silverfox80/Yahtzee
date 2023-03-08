@@ -1,4 +1,10 @@
 import React, { useState,Suspense,useRef,useEffect } from "react";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Canvas } from "@react-three/fiber";
 import { Physics, Debug } from '@react-three/cannon'
 import { v4 as uuidv4 } from 'uuid';
@@ -27,6 +33,7 @@ export default function Home() {
   const [allDiceSelected,setAllDiceSelected] = useState(false)
   const [lockScore,setLockScore] = useState(true)
   const [isRollDisabled,setIsRollDisabled] = useState(false)
+  const [openDialog, handleDisplay] = useState(false);
   
   useEffect(() => {
     //console.log('fixedScore- Has changed')  
@@ -65,6 +72,8 @@ export default function Home() {
     console.log('DICE_SCORE:',score)
     console.log('DICE_BLOCKED_SCORE:',fixedScore)
     console.log('LOCK SCORESHEET:',lockScore)
+
+    openDialogBox()
   }
 
   const onRollAllBtnClick = async (e,activate) => {
@@ -118,6 +127,14 @@ export default function Home() {
     setDiceSelected(diceSelected)        
     checkAllDiceSelected()
   }
+
+  const handleClose = () => {
+    handleDisplay(false);
+  };
+
+  const openDialogBox = () => {
+    handleDisplay(true);
+  };
 
   //Helper Functions
   const calculateScore = () => {
@@ -231,7 +248,7 @@ export default function Home() {
 
   const checkEndConditions = () => {
     if (fixedScore.size == 18) { 
-      console.log('Game is Over. Your Final Score is ' + fixedScore.get("Total"))
+      openDialogBox()
       setIsRollDisabled(true)
     }
   }
@@ -286,6 +303,10 @@ export default function Home() {
     diceList = diceList.filter( e =>String(e).trim() )
   }
 
+  const refreshPage = () => {
+    window.location.reload(false)
+  }
+
   const resetScore = () => {
     // Cycling on Map to reset the score
     score.forEach((value, key) => {
@@ -306,7 +327,7 @@ export default function Home() {
           <button disabled={isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
           <button hidden={true} ref={RollAllButton} onClick={onRollBtnClick}>Roll-One-Die</button>
           <button disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>
-          <button disabled={true} onClick={onDebugBtnClick}>Debug Info Console</button>                    
+          <button disabled={false} onClick={onDebugBtnClick}>Debug Info Console</button>                    
           <span className={css.round}>ROUND {round}</span>
           <span className={css.right}><b>HINT</b>: Select the die you want to keep. <br/>Select all dice to set your score. Good luck!</span>
         </div>
@@ -333,6 +354,24 @@ export default function Home() {
       <div className={css.columnLeft}>
         <ScoreSheet scoreArray={score} confirmedScoreArray={fixedScore} lock={lockScore} onChangeScore={(val)=>setFixedScore(val)} />
       </div>
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Game Over
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Your Final Score is {fixedScore.get("Total")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={refreshPage}>Start a New Game</Button>          
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
