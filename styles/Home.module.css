@@ -8,8 +8,8 @@
 
 .columnRight{
     float: right;
-    width: 80vw;
-    height: calc(100% - 40px);
+    width: 79vw;
+    height: calc(100% - 57px);
     background:#FDECDC;
 }
   
@@ -21,7 +21,8 @@
 
 .controls {
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    padding: 4px 5px 4px 0px;
+    padding: 4px 8px 4px 4px;
+    margin-right: -2px;
 }
 
 .controls > button {
@@ -31,6 +32,7 @@
 
 .canvas{
     background: #000;
+    border: 8px solid white;
 }
 
 .right{

@@ -39,7 +39,7 @@ export default function Home() {
     localStorage.clear()
     setLockScore(true)
     setAllDiceSelected(false)
-    setIsRollDisabled(false)
+    checkEndConditions()
   },[fixedScore]) // <-- the parameter to listen
 
   useEffect(() => {    
@@ -52,11 +52,6 @@ export default function Home() {
       resetScore()
     }
   },[allDiceSelected])
-  
-  useEffect(() => {    
-    //console.log('round- Has changed')    
-    // if (round == 3) setIsRollDisabled(true)  // Not Working always
-  },[round])
 
   let group = useRef()
   let RollAllButton = useRef()
@@ -72,36 +67,20 @@ export default function Home() {
     console.log('LOCK SCORESHEET:',lockScore)
   }
 
-  async function onRollAllBtnClick () {
-    const availableDice = 5 - countDiceSelected()
-    var node = RollAllButton.current
-    for (var i=0;i<availableDice;i++) {
-      node.click()
-      await sleep(1000);
-    }    
+  const onRollAllBtnClick = async (e,activate) => {
+    if(!e.detail || e.detail == 1){ //prevents double clicking
+      const availableDice = 5 - countDiceSelected()
+      var node = RollAllButton.current
+      for (var i=0;i<availableDice;i++) {
+        node.click()
+        await sleep(1000);
+      }   
+    } 
     //
   }
 
-  const onRollBtnClick = (event) => { 
-    //event.target.classList.add(css.test);
-    //event.target.disabled = true;
-    const countDiceOnTable = diceList.filter(value => value !== false).length;
-    
-    if (countDiceOnTable==5 && diceSelected.some(element => element.active === true) && round<3) {
-      removeUnSelected()
-      setRound(round + 1)
-    }
-    
-    const index = diceIndexAvailable.shift()
-    const selectedDie = diceSelected.filter(function (e) {
-      return e.die === index;
-    })
-
-    if (index && round<=3) {
-      setDiceList(diceList.concat(
-        <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
-      ));      
-    } 
+  const onRollBtnClick = () => { 
+    dieRoll()
   }
   
   const onClearBtnClick = () => {
@@ -116,54 +95,31 @@ export default function Home() {
     console.clear()
   }
 
-  const removeUnSelected = () => {
-    
-    for (let i=0;i<5;i++){
-      
-      if(!diceSelected[i].active) {        
-        
-        diceList.filter((el,index) => { 
-          if (el.props.index == diceSelected[i].die) {
-            delete diceList[index]
-            return true
-          }            
-        })
-        diceSelected[i].active=false;
-        diceIndexAvailable.push(i+1);
-      }     
-    }
-
-    diceList = diceList.filter( e =>String(e).trim() )
-  }
-
-  const onClickSelect = (index) => {
+  const onClickSelect = (index) => {  
 
     let selectedDie = diceSelected.filter(function (e) {
       return e.die === index;
     })
 
-    diceSelected.find(e => e.die === index).active = !selectedDie[0].active
+    diceSelected.find(e => e.die === index).active = !selectedDie[0].active  //select or unselect
+    //if the die has been unselected, set the value to zero
     if (!selectedDie[0].active) localStorage.setItem(`die_${selectedDie[0].die}`,0) //reset local storage value to 0
-    diceSelected.find(e => e.die === index).value = localStorage.getItem(`die_${selectedDie[0].die}`);
-    /*
-    diceSelected.find(e => e.die === index).value = selectedDie[0].active ? 
-                                                    localStorage.getItem(`die_${selectedDie[0].die}`) : 
-                                                    localStorage.setItem(`die_${selectedDie[0].die}`,0)
-                                                    */
+    //if selected and undefined - unselect it
+    const storedValue = localStorage.getItem(`die_${selectedDie[0].die}`);
+    if (isNaN(storedValue)) { 
+      //console.log('undefined value')
+      diceSelected.find(e => e.die === index).active = false
+      removeUnSelected()
+    } else {
+      diceSelected.find(e => e.die === index).value = storedValue
+    }   
+
     //set state
-    setDiceSelected(diceSelected)
-        
+    setDiceSelected(diceSelected)        
     checkAllDiceSelected()
   }
 
   //Helper Functions
-  const resetScore = () => {
-    // Cycling on Map to reset the score
-    score.forEach((value, key) => {
-      score.set(key,0)
-    })
-  }
-
   const calculateScore = () => {
     let diceFaceRepeated = [0,0,0,0,0,0] //how many 1, how many 2, how many 3....
     let diceValues = [0,0,0,0,0]
@@ -262,28 +218,6 @@ export default function Home() {
     //console.log(blockedScore)
   }
 
-  const calculateTotal = () => {
-    upperScore = parseInt(score.Aces) + parseInt(score.Twos) + parseInt(score.Threes) + parseInt(score.Fours) + parseInt(score.Fives) + parseInt(score.Sixes)
-    lowerScore = parseInt(score.ThreeOfAKind) + parseInt(score.FourOfAKind) + parseInt(score.SmStraight) + parseInt(score.LgStraight) + parseInt(score.Yahtzee) + parseInt(score.Chance)
-    totalScore = upperScore>=63 ? upperScore+lowerScore+35 : upperScore+lowerScore
-    //Upper Score
-    score.TotalUpperNoBonus = String(upperScore)
-    score.Bonus = upperScore>=63 ? "35" : "0"
-    score.TotalUpper = upperScore>=63 ? String(upperScore+35) : upperScore
-    //Lower Score
-    score.TotalLower = String(lowerScore)
-    //Total Score
-    score.TotalScore = String(totalScore)
-  }
-
-  const countDiceSelected = () => {
-    let count = 0;
-    Object.values(diceSelected).map(val => {
-      if (val['active'])  count++    
-    })
-    return count
-  }
-
   const checkAllDiceSelected = () => {
     let count = 0;
     Object.values(diceSelected).map(val => {
@@ -295,7 +229,69 @@ export default function Home() {
       setAllDiceSelected(false)
   }
 
+  const checkEndConditions = () => {
+    if (fixedScore.size == 18) { 
+      console.log('Game is Over. Your Final Score is ' + fixedScore.get("Total"))
+      setIsRollDisabled(true)
+    }
+  }
+
+  const countDiceSelected = () => {
+    let count = 0;
+    Object.values(diceSelected).map(val => {
+      if (val['active'])  count++    
+    })
+    return count
+  }
+
   const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0)
+  
+  const dieRoll = async () => {
+    const countDiceOnTable = diceList.filter(value => value !== false).length;
+    
+    if (countDiceOnTable==5 && diceSelected.some(element => element.active === true) && round<3) {
+      removeUnSelected()
+      setRound(round + 1)
+    }
+    
+    const index = diceIndexAvailable.shift()
+    const selectedDie = diceSelected.filter(function (e) {
+      return e.die === index;
+    })
+
+    if (index && round<=3) {
+      setDiceList(diceList.concat(
+        <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
+      ));      
+    }
+  }
+
+  const removeUnSelected = () => {
+    
+    for (let i=0;i<5;i++){
+      
+      if(!diceSelected[i].active) {        
+        
+        diceList.filter((el,index) => { 
+          if (el.props.index == diceSelected[i].die) {
+            delete diceList[index]
+            return true
+          }            
+        })
+        diceSelected[i].active=false;
+        diceIndexAvailable.push(i+1);
+      }     
+    }
+
+    diceList = diceList.filter( e =>String(e).trim() )
+  }
+
+  const resetScore = () => {
+    // Cycling on Map to reset the score
+    score.forEach((value, key) => {
+      score.set(key,0)
+    })
+  }
 
   const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -307,8 +303,8 @@ export default function Home() {
     <div className={css.container}>
       <div className={css.columnRight}>
         <div className={css.controls}>
-          <button disabled={isRollDisabled} onClick={onRollAllBtnClick}>Roll All Dice</button>
-          <button disabled={isRollDisabled} ref={RollAllButton} onClick={onRollBtnClick}>Roll-A-Die</button>
+          <button disabled={isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
+          <button hidden={true} ref={RollAllButton} onClick={onRollBtnClick}>Roll-One-Die</button>
           <button disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>
           <button disabled={true} onClick={onDebugBtnClick}>Debug Info Console</button>                    
           <span className={css.round}>ROUND {round}</span>
