@@ -220,11 +220,17 @@ export default function Home() {
       const uniqArr = diceValues.filter(function(item, pos, ary) {
         return !pos || item != ary[pos - 1]
       })
-      if(uniqArr.length == 4) {
+      if(uniqArr.length >= 4) {
         //console.log(uniqArr)
+        uniqArr.sort()
+        isShortStraight = true
+        for (let i = 0; i < uniqArr.length-1; i++) {
+          isShortStraight = isShortStraight && (uniqArr[i+1]-uniqArr[i] == 1);
+        }
+        /*
         const SMdifferenceAry = uniqArr.sort().slice(1).map(function(n, i) { return n - diceValues[i]; })
         const SMisDifference= SMdifferenceAry.every(value => value == 1)
-        isShortStraight = SMisDifference
+        isShortStraight = SMisDifference*/
       }
     }
     
@@ -326,8 +332,8 @@ export default function Home() {
         <div className={css.controls}>
           <button disabled={isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
           <button hidden={true} ref={RollAllButton} onClick={onRollBtnClick}>Roll-One-Die</button>
-          <button disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>
-          <button disabled={false} onClick={onDebugBtnClick}>Debug Info Console</button>                    
+          <button hidden={true} disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>
+          <button hidden={true} disabled={true} onClick={onDebugBtnClick}>Debug Info Console</button>                    
           <span className={css.round}>ROUND {round}</span>
           <span className={css.right}><b>HINT</b>: Select the die you want to keep. <br/>Select all dice to set your score. Good luck!</span>
         </div>

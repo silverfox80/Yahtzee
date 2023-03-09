@@ -7,16 +7,17 @@
 }
 
 .columnRight{
-    float: right;
-    width: 79vw;
+    position: absolute;
+    left: 345px;
+    width: 76vw;
     height: calc(100% - 57px);
     background:#FDECDC;
 }
   
 .columnLeft{
-    float: left;
-    min-width: 270px;
-    width:20vw;
+    position: fixed;
+    width: 345px;
+    height: 800px;
 }
 
 .controls {
@@ -51,20 +52,22 @@
     top: 0;
     left: 0;
     width: 345px;
-    min-height: 800px;
-    max-height: 1600px;
+    height: 1080px;
+    /*background-color: aqua;*/
+    /*max-height: 1600px;*/
 }
 
 .scoresheet{
     background-image: url('/images/score-sheet-mod.jpg');
     background-repeat:no-repeat;
-    background-size: cover;
-    height: 100vh;
+    background-size:cover;   
+    height: 970px; 
     z-index: 10;
 }
 
 .scoresheet_score_taken:not(.total){
-    color:red
+    color:red;
+    cursor: not-allowed;
 }
 
 .scoresheet_Aces{
@@ -85,9 +88,9 @@
 
 .scoresheet_Aces:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -109,9 +112,9 @@
 
 .scoresheet_Twos:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -133,9 +136,9 @@
 
 .scoresheet_Threes:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -157,9 +160,9 @@
 
 .scoresheet_Fours:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -181,9 +184,9 @@
 
 .scoresheet_Fives:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -205,9 +208,9 @@
 
 .scoresheet_Sixes:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -277,9 +280,9 @@
 
 .scoresheet_ThreeOfAKind:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -301,9 +304,9 @@
 
 .scoresheet_FourOfAKind:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -325,9 +328,9 @@
 
 .scoresheet_FullHouse:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -349,9 +352,9 @@
 
 .scoresheet_SmStraight:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -373,9 +376,9 @@
 
 .scoresheet_LgStraight:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -397,9 +400,9 @@
 
 .scoresheet_Yahtzee:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
@@ -421,9 +424,9 @@
 
 .scoresheet_Chance:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
-    background-repeat: no-repeat;
+    background-repeat:space;
     background-size:cover;
-    background-position: 0px -10px;
+    background-position: -6px -8px;
     cursor:pointer;
 }
 
