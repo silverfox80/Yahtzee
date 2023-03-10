@@ -82,7 +82,7 @@ export default function Home() {
       var node = RollAllButton.current
       for (var i=0;i<availableDice;i++) {
         node.click()
-        await sleep(1000);
+        await sleep(500);
       }   
     } 
     //
@@ -272,7 +272,7 @@ export default function Home() {
   const dieRoll = async () => {
     const countDiceOnTable = diceList.filter(value => value !== false).length;
     
-    if (countDiceOnTable==5 && diceSelected.some(element => element.active === true) && round<3) {
+    if (countDiceOnTable==5 && /*diceSelected.some(element => element.active === true) &&*/ round<3) {
       removeUnSelected()
       setRound(round + 1)
     }

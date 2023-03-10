@@ -22,7 +22,7 @@ class DieWrapper extends React.Component {
 
     render() {      
       return (
-        <Die active={this.state.active} index={this.props.index} position={[0, 15, 0]} rotation={this.randomVal()} />
+        <Die active={this.state.active} index={this.props.index} position={[Math.random() * 5 * (Math.round(Math.random()) ? 1 : -1), 15, Math.random() * 5 * (Math.round(Math.random()) ? 1 : -1)]} rotation={this.randomVal()} />
       );
     }
 }
