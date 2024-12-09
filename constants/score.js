@@ -1,0 +1,20 @@
+export const INITIAL_SCORE = new Map([
+    ['Aces', 0],
+    ["Twos", 0],
+    ["Threes", 0],
+    ["Fours", 0],
+    ["Fives", 0],
+    ["Sixes", 0],
+    ["TotalUpperNoBonus", 0],
+    ["Bonus", 0],
+    ["ThreeOfAKind", 0],
+    ["FourOfAKind", 0],
+    ["FullHouse", 0],
+    ["SmStraight", 0],
+    ["LgStraight", 0],
+    ["Yahtzee", 0],
+    ["Chance", 0],
+    ["TotalUpper", 0],
+    ["TotalLower", 0],
+    ["Total", 0]
+])

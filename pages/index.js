@@ -1,12 +1,6 @@
 import React, { useState,Suspense,useRef,useEffect } from "react";
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import { Canvas } from "@react-three/fiber";
-import { Physics, Debug } from '@react-three/cannon'
+import { Physics } from '@react-three/cannon'
 import { v4 as uuidv4 } from 'uuid';
 import css from "../styles/Home.module.css";
 import OrbitControls  from "../components/OrbitControls";
@@ -15,20 +9,18 @@ import Floor from "../components/Floor";
 import Box from "../components/Box";
 import DieWrapper from "../components/DieWrapper";
 import ScoreSheet from "../components/ScoreSheet";
+import GameOverModal from "../components/GameOverModal"
+import {INITIAL_SCORE} from "../constants/score"
 
 export default function Home() {
 
-  const empty_score = new Map([['Aces',0],["Twos",0],["Threes",0],["Fours",0],["Fives",0],["Sixes",0],
-                               ["TotalUpperNoBonus",0],["Bonus",0],
-                               ["ThreeOfAKind",0],["FourOfAKind",0],["FullHouse",0],["SmStraight",0],["LgStraight",0],["Yahtzee",0],["Chance",0],
-                               ["TotalUpper",0],["TotalLower",0],["Total",0]])
   //Hooks
   const [round, setRound] = useState(1)
   const [diceList, setDiceList] = useState([])
   const [diceIndexAvailable,setDiceIndexAvailable] = useState([1,2,3,4,5])
   const [diceSelected,setDiceSelected] = useState([ {die:1,active:false,value:0},{die:2,active:false,value:0},{die:3,active:false,value:0},
                                                     {die:4,active:false,value:0},{die:5,active:false,value:0}])
-  const [score,setScore] = useState(empty_score)
+  const [score,setScore] = useState(INITIAL_SCORE)
   const [fixedScore,setFixedScore] = useState(new Map())
   const [allDiceSelected,setAllDiceSelected] = useState(false)
   const [lockScore,setLockScore] = useState(true)
@@ -306,11 +298,7 @@ export default function Home() {
       }     
     }
 
-    diceList = diceList.filter( e =>String(e).trim() )
-  }
-
-  const refreshPage = () => {
-    window.location.reload(false)
+    setDiceList(diceList.filter( e =>String(e).trim() ))
   }
 
   const resetScore = () => {
@@ -360,24 +348,12 @@ export default function Home() {
       <div className={css.columnLeft}>
         <ScoreSheet scoreArray={score} confirmedScoreArray={fixedScore} lock={lockScore} onChangeScore={(val)=>setFixedScore(val)} />
       </div>
-      <Dialog
+      <GameOverModal
         open={openDialog}
         onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        score={score}
       >
-        <DialogTitle id="alert-dialog-title">
-          Game Over
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Your Final Score is {fixedScore.get("Total")}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={refreshPage}>Start a New Game</Button>          
-        </DialogActions>
-      </Dialog>
+      </GameOverModal>
     </div>
   );
 }
