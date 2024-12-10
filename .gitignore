@@ -1,3 +1,13 @@
-.next
-.swc
-node_modules
+node_modules/*
+lib/*
+test/*
+tests/*
+build/*
+coverage/*
+bin/*
+dist/*
+develop
+.nyc_*/*
+*.pem
+.next/*
+.swc/*
