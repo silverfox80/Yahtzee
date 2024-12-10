@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
-import { Physics, usePlane, useBox } from '@react-three/cannon'
+import { useBox } from '@react-three/cannon'
 
 function Die(props) {
   

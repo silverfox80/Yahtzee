@@ -1,5 +1,5 @@
 import React from "react";
-import css from "../styles/Home.module.css";
+import css from "../styles/ScoreSheet.module.css";
 
 class ScoreSheet extends React.Component {
     
@@ -7,22 +7,8 @@ class ScoreSheet extends React.Component {
       super(props);
       this.state = { confirmedScore: props.confirmedScoreArray };   
       this.handleClick = this.handleClick.bind(this);   
-    }  
-    /*
-    componentDidMount() {
-      console.log("ComponentDidMount");
     }
-    componentWillUnmount() {
-      console.log("componentWillUnmount");
-    }    
-    shouldComponentUpdate(nextProps, nextState) {
-      console.log("ShouldComponentUpdate");
-      return true;
-    }    
-    componentDidUpdate(nextProps, nextState) {
-      //console.log("componentDidUpdate");
-    }
-    */
+
     handleClick = (el) => {
       if (this.props.lock) return //if the scoresheet is locked, just exit the function
 

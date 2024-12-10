@@ -1,0 +1,47 @@
+.container {
+    position: absolute;
+    top:0px;
+    left:0px;
+    height: 100%;
+    background-color:grey;
+}
+
+.columnRight{
+    position: absolute;
+    left: 345px;
+    width: 76vw;
+    height: calc(100% - 57px);
+    background:#FDECDC;
+}
+  
+.columnLeft{
+    position: fixed;
+    width: 345px;
+    height: 800px;
+}
+
+.controls {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    padding: 4px 8px 4px 4px;
+    margin-right: -2px;
+}
+
+.controls > button {
+    margin: 5px 6px 5px 15px;
+    border-radius: 5px;    
+}
+
+.canvas{
+    background: #000;
+    border: 8px solid white;
+}
+
+.right{
+    float:right;
+}
+
+.round{
+    font-weight: bold;
+    margin-left: 20px;
+}
+

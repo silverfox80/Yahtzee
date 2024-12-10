@@ -1,4 +1,4 @@
-export const INITIAL_SCORE = new Map([
+export const INITIAL_SCORE = [
     ['Aces', 0],
     ["Twos", 0],
     ["Threes", 0],
@@ -17,4 +17,4 @@ export const INITIAL_SCORE = new Map([
     ["TotalUpper", 0],
     ["TotalLower", 0],
     ["Total", 0]
-])
+]
