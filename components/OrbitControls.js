@@ -24,7 +24,7 @@ function Controls(props) {
                         minAzimuthAngle={-Math.PI} 
                         maxAzimuthAngle={Math.PI}  
                         minPolarAngle={-Math.PI} 
-                        maxPolarAngle={Math.PI /2} //90 degree
+                        maxPolarAngle={Math.PI / 2.02} // < 90 degree
                         minDistance={5}
                         maxDistance={20}
                         enablePan={false} 

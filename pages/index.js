@@ -14,7 +14,7 @@ import {INITIAL_SCORE} from "../constants/score"
 export default function Home() {
   // state setting
   const initializeState = () => ({
-    round: 1,
+    round: 0,
     diceList: [],
     diceIndexAvailable: [1, 2, 3, 4, 5],
     diceSelected: Array.from({ length: 5 }, (_, i) => ({
@@ -28,6 +28,7 @@ export default function Home() {
     lockScore: true,
     isRollDisabled: false,
     openDialog: false,
+    openConfirmation: false
   });
   const [state, setState] = useState(initializeState);
   
@@ -42,9 +43,10 @@ export default function Home() {
         diceList: [],
         diceIndexAvailable: [1,2,3,4,5],
         diceSelected: [{die:1,active:false},{die:2,active:false},{die:3,active:false},{die:4,active:false},{die:5,active:false}],
-        round: 1,
+        round: 0,
         lockScore: true,
         allDiceSelected: false,
+        isRollDisabled: false,
         score: INITIAL_SCORE
       };
     });
@@ -66,33 +68,26 @@ export default function Home() {
   
   // References
   let group = useRef()
-  let DieRef = useRef()
+  const countdownRef = useRef(0); // Ref for the countdown value
+  const timerRef = useRef(null);  // Ref for the timer ID
+
   // EVENT HANDLERS
   const onRollAllBtnClick = async (e,activate) => {
-    //console.log('onRollAllBtnClick: ' + countDiceSelected())
-    if(!e.detail || e.detail == 1){ //prevents double clicking
-      
-      if (countDiceOnTable()==5 && state.round<3) {
-        await removeUnSelected()        
-      }
-
-      const availableDice = 5 - countDiceSelected()
-      var node = DieRef.current
-      for (var i=0;i<availableDice;i++) {
-        node.click()
-        await sleep(500);
-      }   
-    } 
     //
-  }
-  const onRollBtnClick = () => { 
-    dieRoll()
-  }  
-  const onClearBtnClick = () => {
-    resetScore()
-    setState(initializeState());
-    localStorage.clear()
-    console.clear()
+    disableRollWithTimer(5) //Disable Roll for 5 seconds
+
+    // Check selection      
+    if (countDiceOnTable()==5 && state.round<3) {
+      await removeUnSelected()        
+    }
+
+    const availableDice = 5 - countDiceSelected()
+    // Re-Roll only unselected die/dice
+    for (var i=0;i<availableDice;i++) {
+      dieRoll()
+      await sleep(500);
+    }   
+    //
   }
   const handleScoreChange = (updatedScore) => {
     setState((prevState) => {
@@ -102,12 +97,6 @@ export default function Home() {
         fixedScore: new Map(updatedScore)
       };
     });
-  };
-  const handleClose = () => {
-    setState(initializeState)
-    localStorage.clear()
-    
-
   };
   const openDialogBox = () => {
     setState((prevState) => {
@@ -119,6 +108,47 @@ export default function Home() {
     });
   };
   //Helper Functions
+  const disableRollWithTimer = (timeInSeconds) => {
+    
+    if (state.round==3) return false
+
+    //Disable Roll temporarily
+    setState((prevState) => {
+      const { isRollDisabled, round } = prevState;
+      return {
+        ...prevState,
+        isRollDisabled: true,
+        round: round+1
+      };
+    });
+    countdownRef.current = timeInSeconds; // Set countdown duration to 5 seconds)
+    //
+    // Start a timer for the disabling
+    timerRef.current = setInterval(() => {
+      countdownRef.current -= 1;
+      if (countdownRef.current <= 0) {
+        clearInterval(timerRef.current); // Clear the timer
+        timerRef.current = null; // Reset the timer ref
+        
+        
+
+        setState((prevState) => {
+          const { isRollDisabled,round } = prevState;
+          return {
+            ...prevState,
+            isRollDisabled: round>2 ? true : false
+          };
+        }); //Re-enable after countdown
+        
+      }
+    }, 1000);
+  }
+  const restartGame = () => {
+    resetScore()
+    setState(initializeState());
+    localStorage.clear()
+    console.clear()
+  }
   const checkEndConditions = () => {
     //console.log("checkEndConditions:"+state.fixedScore.size)
     if (state.fixedScore.size == 18) { 
@@ -185,13 +215,41 @@ export default function Home() {
       };
     });
   }
-  const removeUnSelected = async () => {
+  const selectAll = async () => {
     setState((prevState) => {
-      const { diceList, diceIndexAvailable, diceSelected, round } = prevState;
+      const { diceList, diceIndexAvailable, diceSelected } = prevState;
       let dia = diceIndexAvailable
       let ds = diceSelected
       const dl = diceList
-      const r = round
+
+      for (let i=0;i<5;i++){
+        
+        if(!ds[i].active) {  //if die has not been selected      
+          dl.filter((el,index) => {  //find it in the list
+            if (el.props.index == ds[i].die) {
+              //dl[index] //and remove it from the diceList
+              return true
+            }            
+          })
+          ds[i].active=true;
+        }     
+      }
+      
+      return {
+        ...prevState,
+        diceSelected: ds,
+        diceList:dl.filter( e =>String(e).trim() ),
+        diceIndexAvailable: []
+      };
+    })
+  }
+  const removeUnSelected = async () => {
+    setState((prevState) => {
+      const { diceList, diceIndexAvailable, diceSelected } = prevState;
+      let dia = diceIndexAvailable
+      let ds = diceSelected
+      const dl = diceList
+      
 
       for (let i=0;i<5;i++){
         
@@ -213,7 +271,7 @@ export default function Home() {
         diceSelected: ds,
         diceList:dl.filter( e =>String(e).trim() ),
         diceIndexAvailable: dia,
-        round: r+1
+        
       };
     })
   }
@@ -249,7 +307,6 @@ export default function Home() {
     setState((prevState) => {
       const { round, diceList, diceIndexAvailable, diceSelected } = prevState;
       
-      let r = round;
       let dl = diceList;
       let dia = diceIndexAvailable;
       const ds = diceSelected;
@@ -270,7 +327,6 @@ export default function Home() {
 
       return {
         ...prevState,
-        round: r,
         diceList: dl,
         diceIndexAvailable: dia,
       };
@@ -283,10 +339,9 @@ export default function Home() {
     <div className="container">
       <div className="columnRight">
         <div className="controls">
-          <button disabled={state.isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
-          <button hidden={true} ref={DieRef} onClick={onRollBtnClick}>Roll-One-Die</button>
-          <button hidden={true} disabled={true} onClick={onClearBtnClick}>Clear All Dice</button>                   
-          <span className="round">ROUND {state.round}</span>
+          <button className="roll" disabled={state.isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
+          <button className="restart" onClick={openDialogBox}>Restart</button>                   
+          <span className="round" style={{visibility: state.round ? 'visible' : 'hidden' }}>ROUND { state.round }</span>
           <span className="right"><b>HINT</b>: Select the die you want to keep. <br/>Select all dice to set your score. Good luck!</span>
         </div>
         <Canvas
@@ -319,7 +374,7 @@ export default function Home() {
       </div>
       <GameOverModal
         open={state.openDialog}
-        onClose={handleClose}
+        onClose={restartGame}
         score={state.fixedScore}
       >
       </GameOverModal>

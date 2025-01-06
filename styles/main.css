@@ -1,3 +1,6 @@
+body {
+    background-color:#FEEDDB;
+}
 .container {
     position: absolute;
     top:0px;
@@ -27,8 +30,42 @@
 }
 
 .controls > button {
-    margin: 5px 6px 5px 15px;
-    border-radius: 5px;    
+    display: inline;
+    align-items: center;
+    padding: 6px 14px;
+    margin-right:5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    border-radius: 6px;
+    border: none;
+
+    color: #fff;
+    cursor:pointer;
+    background-origin: border-box;
+    box-shadow: 0px 0.5px 1.5px rgba(54, 122, 246, 0.25), inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;    
+}
+
+.controls > button.roll {
+    background: linear-gradient(180deg, #4B91F7 0%, #175e13 100%);
+}
+
+.controls > button.restart {
+    background: linear-gradient(180deg, #eb1717 0%, #175e13 100%);
+}
+
+.controls > button:focus {
+    box-shadow: inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2), 0px 0.5px 1.5px rgba(54, 122, 246, 0.25), 0px 0px 0px 3.5px rgba(58, 108, 217, 0.5);
+    outline: 0;
+}
+
+.controls > button:disabled,
+.controls > button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+  cursor:not-allowed;
 }
 
 .canvas{
@@ -44,4 +81,3 @@
     font-weight: bold;
     margin-left: 20px;
 }
-
