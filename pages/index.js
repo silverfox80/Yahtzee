@@ -306,15 +306,24 @@ export default function Home() {
     
   }
 
-  // RENDER
-
   return (
     <div className="container">
       <div className="columnRight">
         <div className="controls">
           <button className="roll" disabled={state.isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
-          <button className="restart" onClick={openDialogBox}>Restart</button>              
+          <button className="restart" onClick={openDialogBox}>Restart</button>   
           <span className="round" style={{visibility: state.round ? 'visible' : 'hidden' }}>ROUND { state.round }</span>
+          <div className="selectedDiceDisplay">
+          {state.diceSelected.map((el, index) => 
+            el?.value && el.active==true ? ( // Only render if el.value exists and the die is selected
+              <span 
+                key={el.id || index} 
+                className={`face_${el.value}`} 
+                aria-label={`Dice showing ${el.value}`}
+              ></span>
+            ) : null // Skip rendering if el.value doesn't exist
+          )}
+          </div>          
           <span className="right"><b>HINT</b>: Select the die you want to keep. <br/>Select all dice to set your score. Good luck!</span>
         </div>
         <Canvas

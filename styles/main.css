@@ -76,7 +76,71 @@ body {
     background: #000;
     border: 8px solid white;
 }
-
+div.selectedDiceDisplay{
+    width:700px;
+    text-align: center;
+    display: inline-block;
+}
+span.face_1{
+    background:url("/textures/dice/dice_1.jpeg") no-repeat top left;
+    background-size: contain;
+    display: inline-block;
+    width:30px;
+    height: 30px;
+    vertical-align: bottom;
+    border: 1px solid black;
+    margin-left: 5px;
+}
+span.face_2{
+    background:url("/textures/dice/dice_2.jpeg") no-repeat top left;
+    background-size: contain;
+    display: inline-block;
+    width:30px;
+    height: 30px;
+    vertical-align: bottom;
+    border: 1px solid black;
+    margin-left: 5px;
+}
+span.face_3{
+    background:url("/textures/dice/dice_3.jpeg") no-repeat top left;
+    background-size: contain;
+    display: inline-block;
+    width:30px;
+    height: 30px;
+    vertical-align: bottom;
+    border: 1px solid black;
+    margin-left: 5px;
+}
+span.face_4{
+    background:url("/textures/dice/dice_4.jpeg") no-repeat top left;
+    background-size: contain;
+    display: inline-block;
+    width:30px;
+    height: 30px;
+    vertical-align: bottom;
+    border: 1px solid black;
+    margin-left: 5px;
+}
+span.face_5{
+    background:url("/textures/dice/dice_5.jpeg") no-repeat top left;
+    background-size: contain;
+    display: inline-block;
+    width:30px;
+    height: 30px;
+    vertical-align: bottom;
+    border: 1px solid black;
+    margin-left: 5px;
+}
+span.face_6{
+    background:url("/textures/dice/dice_6.jpeg") no-repeat top left;
+    background-size: contain;
+    display: inline-block;
+    width:30px;
+    height: 30px;
+    vertical-align: bottom;
+    border: 1px solid black;
+    margin-left: 5px;
+}
 .right{
     float:right;
 }

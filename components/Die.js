@@ -53,13 +53,13 @@ const Die = (props) => {
     return faceMapping[`${x},${z}`] || "undefined";
   }
 
-  const [ref,api] = useBox(() => ({ 
+  const [meshRef,api] = useBox(() => ({ 
     mass: 2, 
     //onCollide: (e) => console.log(`Object ${e.target.uuid} collided with the following speed (x,y,z) : ${velocity.current}`), 
     ...props 
   }))
 
-  const getInfo = () => { 
+  const toggleSelection = () => { 
     // Invert selection
     setActive(!active)
     // Adjust mass based on active state
@@ -110,10 +110,10 @@ const Die = (props) => {
   return (
     <mesh 
       {...props} 
-      onClick={getInfo}
+      onClick={toggleSelection}
       castShadow 
       receiveShadow 
-      ref={ref}
+      ref={meshRef}
       rotation={dieState.current.rotation}
       position={dieState.current.position}
     >
