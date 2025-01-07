@@ -12,7 +12,7 @@ import GameOverModal from "../components/GameOverModal"
 import {INITIAL_SCORE} from "../constants/score"
 
 export default function Home() {
-  // state setting
+  // initialize state setting
   const initializeState = () => ({
     round: 0,
     diceList: [],
@@ -27,12 +27,12 @@ export default function Home() {
     allDiceSelected: false,
     lockScore: true,
     isRollDisabled: false,
-    openDialog: false,
-    openConfirmation: false
+    openDialog: false
   });
+  
   const [state, setState] = useState(initializeState);
   
-  // Monitoring fixedScore and allDiceSelected state variables
+  // Monitoring state variables, when they change, useEffect will trigger
   useEffect(() => { 
     //if (state.lockScore) return
     //console.log('Call reset when fixedScore changes')
@@ -68,8 +68,8 @@ export default function Home() {
   
   // References
   let group = useRef()
-  const countdownRef = useRef(0); // Ref for the countdown value
-  const timerRef = useRef(null);  // Ref for the timer ID
+  const countdownRef = useRef(0) // Ref for the countdown value
+  const timerRef = useRef(null)  // Ref for the timer ID
 
   // EVENT HANDLERS
   const onRollAllBtnClick = async (e,activate) => {
@@ -85,7 +85,7 @@ export default function Home() {
     // Re-Roll only unselected die/dice
     for (var i=0;i<availableDice;i++) {
       dieRoll()
-      await sleep(500);
+      await sleep(500); //wait half second between one die and the other, to avoid collisions on air
     }   
     //
   }
@@ -97,7 +97,7 @@ export default function Home() {
         fixedScore: new Map(updatedScore)
       };
     });
-  };
+  }
   const openDialogBox = () => {
     setState((prevState) => {
       const { openDialog } = prevState;
@@ -106,8 +106,61 @@ export default function Home() {
         openDialog: true
       };
     });
-  };
-  //Helper Functions
+  }
+  // Helper Functions
+  const calculateScore = () => {
+    const diceFaceCounts = Array(6).fill(0);
+    const diceValues = state.diceSelected.map((d) => d.value);
+    diceValues.forEach((value) => {
+      if (value > 0) diceFaceCounts[value - 1]++;
+    });
+
+    const newScore = new Map(state.score);
+
+    // Basic Scoring
+    ["Aces", "Twos", "Threes", "Fours", "Fives", "Sixes"].forEach(
+      (category, i) => newScore.set(category, diceFaceCounts[i] * (i + 1))
+    );
+
+    // Special Scores
+    const chance = diceValues.reduce((sum, val) => sum + val, 0);
+    const isTris = diceFaceCounts.some((count) => count >= 3);
+    const isPoker = diceFaceCounts.some((count) => count >= 4);
+    const isYahtzee = diceFaceCounts.some((count) => count === 5);
+    const isFullHouse = diceFaceCounts.includes(3) && diceFaceCounts.includes(2);
+    const isShortStraight = hasStraight(diceValues, 4);
+    const isFullStraight = hasStraight(diceValues, 5);
+
+    newScore.set("Chance", chance);
+    newScore.set("ThreeOfAKind", isTris ? chance : 0);
+    newScore.set("FourOfAKind", isPoker ? chance : 0);
+    newScore.set("Yahtzee", isYahtzee ? 50 : 0);
+    newScore.set("FullHouse", isFullHouse ? 25 : 0);
+    newScore.set("SmStraight", isShortStraight ? 30 : 0);
+    newScore.set("LgStraight", isFullStraight ? 40 : 0);
+
+    setState((prevState) => ({ ...prevState, score: newScore }));
+  }
+  const checkEndConditions = () => {
+    //console.log("checkEndConditions:"+state.fixedScore.size)
+    if (state.fixedScore.size == 18) { 
+      //console.log("checkEndConditions met requisites")
+      openDialogBox()
+      setState((prevState) => {
+        const { isRollDisabled } = prevState;
+        return {
+          ...prevState,
+          isRollDisabled: true
+        };
+      });
+    }
+  }
+  const countDiceSelected = () => {
+    return (state.diceSelected).filter(value => value.active !== false).length
+  }
+  const countDiceOnTable = () => {
+    return (state.diceList).filter(value => value !== false).length
+  }
   const disableRollWithTimer = (timeInSeconds) => {
     
     if (state.round==3) return false
@@ -143,59 +196,6 @@ export default function Home() {
       }
     }, 1000);
   }
-  const restartGame = () => {
-    resetScore()
-    setState(initializeState());
-    localStorage.clear()
-    console.clear()
-  }
-  const checkEndConditions = () => {
-    //console.log("checkEndConditions:"+state.fixedScore.size)
-    if (state.fixedScore.size == 18) { 
-      //console.log("checkEndConditions met requisites")
-      openDialogBox()
-      setState((prevState) => {
-        const { isRollDisabled } = prevState;
-        return {
-          ...prevState,
-          isRollDisabled: true
-        };
-      });
-    }
-  }
-  const calculateScore = () => {
-    const diceFaceCounts = Array(6).fill(0);
-    const diceValues = state.diceSelected.map((d) => d.value);
-    diceValues.forEach((value) => {
-      if (value > 0) diceFaceCounts[value - 1]++;
-    });
-
-    const newScore = new Map(state.score);
-
-    // Basic Scoring
-    ["Aces", "Twos", "Threes", "Fours", "Fives", "Sixes"].forEach(
-      (category, i) => newScore.set(category, diceFaceCounts[i] * (i + 1))
-    );
-
-    // Special Scores
-    const chance = diceValues.reduce((sum, val) => sum + val, 0);
-    const isTris = diceFaceCounts.some((count) => count >= 3);
-    const isPoker = diceFaceCounts.some((count) => count >= 4);
-    const isYahtzee = diceFaceCounts.some((count) => count === 5);
-    const isFullHouse = diceFaceCounts.includes(3) && diceFaceCounts.includes(2);
-    const isShortStraight = hasStraight(diceValues, 4);
-    const isFullStraight = hasStraight(diceValues, 5);
-
-    newScore.set("Chance", chance);
-    newScore.set("ThreeOfAKind", isTris ? chance : 0);
-    newScore.set("FourOfAKind", isPoker ? chance : 0);
-    newScore.set("Yahtzee", isYahtzee ? 50 : 0);
-    newScore.set("FullHouse", isFullHouse ? 25 : 0);
-    newScore.set("SmStraight", isShortStraight ? 30 : 0);
-    newScore.set("LgStraight", isFullStraight ? 40 : 0);
-
-    setState((prevState) => ({ ...prevState, score: newScore }));
-  };
   const hasStraight = (values, length) => {
     const uniqueSorted = [...new Set(values)].sort((a, b) => a - b);
     let count = 1;
@@ -204,44 +204,6 @@ export default function Home() {
       if (count >= length) return true;
     }
     return false;
-  };
-  const resetScore = () => {
-    // Cycling on Map to reset the score
-    setState((prevState) => {
-      const { score } = prevState;
-      return {
-        ...prevState,
-        score: INITIAL_SCORE
-      };
-    });
-  }
-  const selectAll = async () => {
-    setState((prevState) => {
-      const { diceList, diceIndexAvailable, diceSelected } = prevState;
-      let dia = diceIndexAvailable
-      let ds = diceSelected
-      const dl = diceList
-
-      for (let i=0;i<5;i++){
-        
-        if(!ds[i].active) {  //if die has not been selected      
-          dl.filter((el,index) => {  //find it in the list
-            if (el.props.index == ds[i].die) {
-              //dl[index] //and remove it from the diceList
-              return true
-            }            
-          })
-          ds[i].active=true;
-        }     
-      }
-      
-      return {
-        ...prevState,
-        diceSelected: ds,
-        diceList:dl.filter( e =>String(e).trim() ),
-        diceIndexAvailable: []
-      };
-    })
   }
   const removeUnSelected = async () => {
     setState((prevState) => {
@@ -275,11 +237,23 @@ export default function Home() {
       };
     })
   }
-  const countDiceSelected = () => {
-    return (state.diceSelected).filter(value => value.active !== false).length
+  const resetScore = () => {
+    // Cycling on Map to reset the score
+    setState((prevState) => {
+      const { score } = prevState;
+      return {
+        ...prevState,
+        score: INITIAL_SCORE
+      };
+    });
   }
-  const countDiceOnTable = () => {
-    return (state.diceList).filter(value => value !== false).length
+  const restartGame = () => {  
+    setState(initializeState())
+    localStorage.clear()
+    console.clear()
+  }
+  const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
   const toggleDieSelection = (index) => {
     setState((prevState) => {
@@ -297,11 +271,9 @@ export default function Home() {
         allDiceSelected: diceSelected.every((d) => d.active),
       };
     });
-  };
-  const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
-  //Business Logic for die rolling
+
+  // Business Logic for die rolling
   const dieRoll = () => {
     
     setState((prevState) => {
@@ -333,14 +305,15 @@ export default function Home() {
     });
     
   }
-  //
+
+  // RENDER
 
   return (
     <div className="container">
       <div className="columnRight">
         <div className="controls">
           <button className="roll" disabled={state.isRollDisabled} onClick={onRollAllBtnClick}>Roll Dice</button>
-          <button className="restart" onClick={openDialogBox}>Restart</button>                   
+          <button className="restart" onClick={openDialogBox}>Restart</button>              
           <span className="round" style={{visibility: state.round ? 'visible' : 'hidden' }}>ROUND { state.round }</span>
           <span className="right"><b>HINT</b>: Select the die you want to keep. <br/>Select all dice to set your score. Good luck!</span>
         </div>
@@ -366,7 +339,6 @@ export default function Home() {
       </div>
       <div className="columnLeft">
         <ScoreSheet 
-          key={state.round === 1 ? Math.random() : "score-sheet"} // Change key after reset
           confirmedScoreArray={state.fixedScore}
           scoreArray={new Map(state.score)}
           onChangeScore={handleScoreChange} 
