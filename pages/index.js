@@ -50,19 +50,19 @@ export default function Home() {
         score: INITIAL_SCORE
       };
     });
-    localStorage.clear()
+    //localStorage.clear()
     checkEndConditions()
   },[state.fixedScore]) // <-- the parameter to listen
 
   useEffect(() => {    
     setState((prevState) => {
-      const { lockScore } = prevState;
+      //const { lockScore } = prevState;
       return {
         ...prevState,
-        lockscore: state.allDiceSelected?false:true,
+        lockScore: state.allDiceSelected?false:true,
       };
     });
-    state.allDiceSelected? calculateScore() : resetScore();
+    state.allDiceSelected ? calculateScore() : resetScore();
 
   },[state.allDiceSelected]) // <-- the parameter to listen
   
@@ -107,39 +107,70 @@ export default function Home() {
       };
     });
   }
+  const handleDieStateChange = (newDieState) => {
+    //console.log('handleDieStateChange has been called from Die component :')
+    //console.log(newDieState)
+    //This callback coming from the Die component update the state on the main app component
+    setState((prevState) => {
+      const diceSelected = prevState.diceSelected.map((d) => {
+        if (d.die === newDieState.index) {
+          return {
+            ...d,
+            active: newDieState.isActive,
+            value: newDieState.dieValue
+          }
+        }
+        return d
+      })
+  
+      const allDiceSelected = diceSelected.every((d) => d.active) //chech if all dice are selected
+  
+      return {
+        ...prevState,
+        diceSelected,
+        allDiceSelected,
+      }
+    })
+  }
   // Helper Functions
   const calculateScore = () => {
-    const diceFaceCounts = Array(6).fill(0);
-    const diceValues = state.diceSelected.map((d) => d.value);
+    const diceFaceCounts = Array(6).fill(0)
+    const diceValues = state.diceSelected
+                            .map((d) => d.value)   
     diceValues.forEach((value) => {
-      if (value > 0) diceFaceCounts[value - 1]++;
-    });
-
-    const newScore = new Map(state.score);
+      if (value > 0) diceFaceCounts[value - 1]++
+    })
+    
+    if (diceValues.length != 5) { 
+      console.log("Something went wrong with the calculated dice values",diceValues)
+      return 
+    }
+    const newScore = new Map(state.score)
 
     // Basic Scoring
-    ["Aces", "Twos", "Threes", "Fours", "Fives", "Sixes"].forEach(
+    let categories = ["Aces", "Twos", "Threes", "Fours", "Fives", "Sixes"];
+    categories.forEach(
       (category, i) => newScore.set(category, diceFaceCounts[i] * (i + 1))
-    );
+    )
 
     // Special Scores
-    const chance = diceValues.reduce((sum, val) => sum + val, 0);
-    const isTris = diceFaceCounts.some((count) => count >= 3);
-    const isPoker = diceFaceCounts.some((count) => count >= 4);
-    const isYahtzee = diceFaceCounts.some((count) => count === 5);
-    const isFullHouse = diceFaceCounts.includes(3) && diceFaceCounts.includes(2);
-    const isShortStraight = hasStraight(diceValues, 4);
-    const isFullStraight = hasStraight(diceValues, 5);
+    const chance = diceValues.reduce((sum, val) => sum + val, 0)
+    const isTris = diceFaceCounts.some((count) => count >= 3)
+    const isPoker = diceFaceCounts.some((count) => count >= 4)
+    const isYahtzee = diceFaceCounts.some((count) => count === 5)
+    const isFullHouse = diceFaceCounts.includes(3) && diceFaceCounts.includes(2)
+    const isShortStraight = hasStraight(diceValues, 4)
+    const isFullStraight = hasStraight(diceValues, 5)
 
-    newScore.set("Chance", chance);
-    newScore.set("ThreeOfAKind", isTris ? chance : 0);
-    newScore.set("FourOfAKind", isPoker ? chance : 0);
-    newScore.set("Yahtzee", isYahtzee ? 50 : 0);
-    newScore.set("FullHouse", isFullHouse ? 25 : 0);
-    newScore.set("SmStraight", isShortStraight ? 30 : 0);
-    newScore.set("LgStraight", isFullStraight ? 40 : 0);
+    newScore.set("Chance", chance)
+    newScore.set("ThreeOfAKind", isTris ? chance : 0)
+    newScore.set("FourOfAKind", isPoker ? chance : 0)
+    newScore.set("Yahtzee", isYahtzee ? 50 : 0)
+    newScore.set("FullHouse", isFullHouse ? 25 : 0)
+    newScore.set("SmStraight", isShortStraight ? 30 : 0)
+    newScore.set("LgStraight", isFullStraight ? 40 : 0)
 
-    setState((prevState) => ({ ...prevState, score: newScore }));
+    setState((prevState) => ({ ...prevState, score: newScore }))
   }
   const checkEndConditions = () => {
     //console.log("checkEndConditions:"+state.fixedScore.size)
@@ -223,7 +254,7 @@ export default function Home() {
               return true
             }            
           })
-          //ds[i].active=false;
+          ds[i].value="undefined";
           dia.push(i+1); //set the die as available
         }     
       }
@@ -249,28 +280,9 @@ export default function Home() {
   }
   const restartGame = () => {  
     setState(initializeState())
-    localStorage.clear()
-    console.clear()
   }
   const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  const toggleDieSelection = (index) => {
-    setState((prevState) => {
-      const diceSelected = [...prevState.diceSelected];
-      const die = diceSelected.find((d) => d.die === index);
-      die.active = !die.active;
-      if (!die.active) {
-        localStorage.setItem(`die_${die.die}`, 0); // Reset value
-      } else {
-        die.value = parseInt(localStorage.getItem(`die_${die.die}`)) || 0;
-      }
-      return {
-        ...prevState,
-        diceSelected,
-        allDiceSelected: diceSelected.every((d) => d.active),
-      };
-    });
   }
 
   // Business Logic for die rolling
@@ -293,7 +305,7 @@ export default function Home() {
       if (index && round<=3) {
         //console.log("dieRoll concat")
         dl=dl.concat(
-          <DieWrapper key={uuidv4()} active={selectedDie[0].active} index={index} />
+          <DieWrapper key={uuidv4()} onDieStateChange={handleDieStateChange} active={selectedDie[0].active} index={index} />
         );      
       }
 
@@ -318,7 +330,7 @@ export default function Home() {
             el?.value && el.active==true ? ( // Only render if el.value exists and the die is selected
               <span 
                 key={el.id || index} 
-                className={`face_${el.value}`} 
+                className={`face face_${el.value}`} 
                 aria-label={`Dice showing ${el.value}`}
               ></span>
             ) : null // Skip rendering if el.value doesn't exist
@@ -338,7 +350,7 @@ export default function Home() {
             <Floor />
             <Box />
             <Suspense fallback={null}>
-              <group ref={group} onClick={(e)=>toggleDieSelection(e.object.index)}>
+              <group ref={group}>
                 {state.diceList}
               </group>
             </Suspense>

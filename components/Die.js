@@ -1,14 +1,25 @@
-import React, {useEffect, useRef, useState, forwardRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 import { useBox } from '@react-three/cannon'
 
-const Die = (props) => {
+const Die = ({onStateChange,...props}) => {
   
-  const [active, setActive] = useState(props.active)
-  const [dieValue, setDieValue] = useState("undefined");
-  const [hasStopped, setHasStopped] = useState(false); // To track if the die has stopped
-
+  const [dieState, setDieState] = useState({  index: props.index, 
+                                              isActive: false, 
+                                              dieValue: "undefined", 
+                                              hasStopped: false
+                                            })
+  
+  // Update specific properties of dieState
+  const updateDieState = (updates) => {
+    setDieState(prevState => ({
+      ...prevState,
+      ...updates
+    }));
+  };
+  
+  const dieStatePrev = useRef(null)
 
   const diceTextures = useLoader(TextureLoader, [
     "textures/dice/dice_1.jpeg",
@@ -17,21 +28,15 @@ const Die = (props) => {
     "textures/dice/dice_4.jpeg",
     "textures/dice/dice_5.jpeg",
     "textures/dice/dice_6.jpeg",
-  ]);
+  ])
   
-  
-  const radiansToDegrees = (radians) => {  
-    let degrees = Array(0,0,0);
-    for (let i = 0; i<3; i++) {
-      degrees[i] = ( Math.round(radians[i] * (180 / Math.PI)) + 180 ) % 360  //normalized
-    }
-    return degrees;
-  }
+  const radiansToDegrees = (radians) =>
+    radians.map((radian) => Math.round(((radian * (180 / Math.PI) + 180)) % 360)); //approximate within 10 degrees
 
   const checkDice = (rotTriplet) => {
 
     const [x, y, z] = rotTriplet;
-
+    //console.log(rotTriplet)
     const faceMapping = {
       "0,0": 3,
       "0,90": 1,
@@ -60,14 +65,17 @@ const Die = (props) => {
   }))
 
   const toggleSelection = () => { 
+    
+    if (isNaN(dieState.dieValue)) return
     // Invert selection
-    setActive(!active)
+    updateDieState({ isActive: !dieState.isActive });
     // Adjust mass based on active state
-    api.mass.set(active ? 2 : 20); //make it ten times heavier when selected so that other dice will collide with it without moving it
+    api.mass.set(dieState.isActive ? 2 : 10); //make it ten times heavier when selected so that other dice will collide with it without moving it
+    //
   }
 
   // Unified ref for position, rotation, and velocity
-  const dieState = useRef({
+  const diePhysicState = useRef({
     position: [0, 0, 0],
     rotation: [0, 0, 0],
     velocity: [0, 0, 0],
@@ -75,29 +83,34 @@ const Die = (props) => {
 
   useEffect(() => {
   const unsubPosition = api.position.subscribe((p) => {
-    dieState.current.position = p;
+    diePhysicState.current.position = p;
     
   });
   const unsubRotation = api.rotation.subscribe((r) => {
-    dieState.current.rotation = r;
+    diePhysicState.current.rotation = r;
     
   });
   const unsubVelocity = api.velocity.subscribe((v) => {
-    dieState.current.velocity = v;
+    diePhysicState.current.velocity = v;
 
     const speed = Math.sqrt(
       v[0] ** 2 + v[1] ** 2 + v[2] ** 2
     );
-
-    if (speed < 0.01 && !hasStopped) {
-      setHasStopped(true);
-      const rotationInDegrees = radiansToDegrees(dieState.current.rotation);
-      const value = checkDice(rotationInDegrees);
-      setDieValue(value);
-      window.localStorage.setItem(`die_${props.index}`, value);
-    } else if (speed >= 0.01 && hasStopped) {
-      setHasStopped(false);
-    }
+    
+    const minSpeedTolerance = 0.15 
+    //speed is never completely 0 because the Die will vibrate in contact with the floor
+    if (speed < minSpeedTolerance && !dieState.hasStopped) {   
+      //console.log(`Die ${props.index} has its speed under the tolerance`)
+      const rotationInDegrees = radiansToDegrees(diePhysicState.current.rotation)
+      const value = checkDice(rotationInDegrees)
+      if (value!=="undefined") {
+        console.log(`Die ${props.index} stopped and its calculated value is ${value}`)
+        updateDieState({ dieValue: value, hasStopped: true })
+      } 
+      // else {
+      //   console.log(`it was not possible to determine its value`)
+      // }
+    } 
   });
 
   return () => {
@@ -105,7 +118,17 @@ const Die = (props) => {
     unsubRotation();
     unsubVelocity();
   };
-}, [api,hasStopped]);
+}, [api,dieState.hasStopped]);
+
+  useEffect(() => {
+    // console.log("Previous State",dieStatePrev.current )
+    // console.log("Actual State",dieState )
+    if (dieState.hasStopped && dieState.dieValue !== "undefined" && dieStatePrev.current !== dieState) {
+      //console.log("Die stopped and has the following values:");
+      dieStatePrev.current = dieState
+      onStateChange?.(dieState);
+    }
+  }, [dieState]);
 
   return (
     <mesh 
@@ -114,8 +137,8 @@ const Die = (props) => {
       castShadow 
       receiveShadow 
       ref={meshRef}
-      rotation={dieState.current.rotation}
-      position={dieState.current.position}
+      rotation={diePhysicState.current.rotation}
+      position={diePhysicState.current.position}
     >
       <boxGeometry attach="geometry" />    
       {diceTextures.map((texture, index) => (
@@ -123,7 +146,7 @@ const Die = (props) => {
           key={index}
           map={texture}
           attach={`material-${index}`}
-          color={active ? "skyblue" : "white"}
+          color={dieState.isActive ? "skyblue" : "white"}
         />
       ))}  
     </mesh>
