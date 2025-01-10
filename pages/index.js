@@ -1,13 +1,15 @@
-import React, { useState,Suspense,useRef,useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import { Physics } from '@react-three/cannon'
-import { v4 as uuidv4 } from 'uuid';
-import OrbitControls  from "../components/OrbitControls";
-import SpotLight from "../components/SpotLight";
-import Floor from "../components/Floor";
-import Box from "../components/Box";
-import DieWrapper from "../components/DieWrapper";
-import ScoreSheet from "../components/ScoreSheet";
+import React, { useState,Suspense,useRef,useEffect } from "react"
+import { Canvas } from "@react-three/fiber"
+import { Physics } from "@react-three/cannon"
+import { v4 as uuidv4 } from "uuid"
+import ErrorBoundary from "../components/ErrorBoundary"
+import FallbackComponent from "../components/FallbackComponent"
+import OrbitControls  from "../components/OrbitControls"
+import SpotLight from "../components/SpotLight"
+import Floor from "../components/Floor"
+import Box from "../components/Box"
+import DieWrapper from "../components/DieWrapper"
+import ScoreSheet from "../components/ScoreSheet"
 import GameOverModal from "../components/GameOverModal"
 import {INITIAL_SCORE} from "../constants/score"
 
@@ -280,6 +282,7 @@ export default function Home() {
   }
   const restartGame = () => {  
     setState(initializeState())
+    console.clear()
   }
   const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -349,11 +352,13 @@ export default function Home() {
           <Physics iterations={6}>          
             <Floor />
             <Box />
-            <Suspense fallback={null}>
-              <group ref={group}>
-                {state.diceList}
-              </group>
-            </Suspense>
+            <ErrorBoundary fallback={<FallbackComponent />}>
+              <Suspense fallback={null}>
+                <group ref={group}>
+                  {state.diceList}
+                </group>
+              </Suspense>
+            </ErrorBoundary>            
             <OrbitControls />  
           </Physics>        
         </Canvas>
