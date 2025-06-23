@@ -86,8 +86,8 @@ class ScoreSheet extends React.Component {
           <span id="LgStraight"   onClick={this.handleClick} className={`${css.scoresheet_LgStraight}   ${isNaN(this.state.confirmedScore.get("LgStraight"))   ? "" : css.scoresheet_score_taken}`}>{ this.state.confirmedScore.get("LgStraight")   ? this.state.confirmedScore.get("LgStraight") : this.props.scoreArray.get("LgStraight")}</span>
           <span id="Yahtzee"      onClick={this.handleClick} className={`${css.scoresheet_Yahtzee}      ${isNaN(this.state.confirmedScore.get("Yahtzee"))      ? "" : css.scoresheet_score_taken}`}>{ this.state.confirmedScore.get("Yahtzee")      ? this.state.confirmedScore.get("Yahtzee") : this.props.scoreArray.get("Yahtzee")}</span>
           <span id="Chance"       onClick={this.handleClick} className={`${css.scoresheet_Chance}       ${isNaN(this.state.confirmedScore.get("Chance"))       ? "" : css.scoresheet_score_taken}`}>{ this.state.confirmedScore.get("Chance")       ? this.state.confirmedScore.get("Chance") : this.props.scoreArray.get("Chance")}</span>
-          <span className={`${css.scoresheet_TotalUpper}  ${css.total} ${isNaN(this.state.confirmedScore.get("TotalUpper"))  ? "" : css.scoresheet_score_taken}`}>{this.state.confirmedScore.get("TotalUpper") ?? 0 }</span> 
           <span className={`${css.scoresheet_TotalLower}  ${css.total} ${isNaN(this.state.confirmedScore.get("TotalLower"))  ? "" : css.scoresheet_score_taken}`}>{this.state.confirmedScore.get("TotalLower") ?? 0 }</span> 
+          <span className={`${css.scoresheet_TotalUpper}  ${css.total} ${isNaN(this.state.confirmedScore.get("TotalUpper"))  ? "" : css.scoresheet_score_taken}`}>{this.state.confirmedScore.get("TotalUpper") ?? 0 }</span> 
           <span className={`${css.scoresheet_Total}       ${css.total} ${isNaN(this.state.confirmedScore.get("Total"))       ? "" : css.scoresheet_score_taken}`}>{this.state.confirmedScore.get("Total")      ?? 0 }</span> 
         </div>
       </div>

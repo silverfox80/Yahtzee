@@ -216,8 +216,6 @@ export default function Home() {
         clearInterval(timerRef.current); // Clear the timer
         timerRef.current = null; // Reset the timer ref
         
-        
-
         setState((prevState) => {
           const { isRollDisabled,round } = prevState;
           return {
