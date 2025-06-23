@@ -1,6 +1,6 @@
 {
   "name": "yahtzee",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A simple version of the well-known dice game",
   "type": "module",
   "main": "index.js",
