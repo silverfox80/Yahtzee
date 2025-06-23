@@ -5,14 +5,14 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 345px;
+    width: 350px;
     height: 1080px;
     /*background-color: aqua;*/
     /*max-height: 1600px;*/
 }
 
 .scoresheet{
-    background-image: url('/images/score-sheet-mod.jpg');
+    background-image: url('/images/score-sheet.jpg');
     background-repeat:no-repeat;
     background-size:cover;   
     height: 970px; 
@@ -43,8 +43,8 @@
 .scoresheet_Aces:hover:not(.scoresheet_score_taken){
     background-image: url('/images/circle-red.png');
     background-repeat:space;
-    background-size:cover;
-    background-position: -6px -8px;
+    background-size:contain;
+    background-position: 30% 0%;
     cursor:pointer;
 }
 

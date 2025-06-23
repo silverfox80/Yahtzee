@@ -11,7 +11,7 @@ body {
 
 .columnRight{
     position: absolute;
-    left: 345px;
+    left: 350px;
     width: 76vw;
     height: calc(100% - 57px);
     background:#FDECDC;

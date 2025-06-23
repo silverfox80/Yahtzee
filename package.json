@@ -18,7 +18,7 @@
     "@emotion/styled": "^11.14.0",
     "@react-three/cannon": "^6.3.0",
     "@react-three/fiber": "^8.0.27",
-    "next": "^14.2.18",
+    "next": "^14.2.23",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.142.0",
