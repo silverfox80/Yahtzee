@@ -1,5 +1,5 @@
-# Use the official Node.js 18 LTS image as the base image for building
-FROM node:18.20 AS builder
+# Use the official Node.js image as the base image for building
+FROM node:22-slim AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -8,16 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install --verbose
 
 # Copy the entire project to the container
-COPY . ./
+COPY . .
 
 # Build the Next.js app
 RUN npm run build
 
 # Use a lightweight Node.js image for the production environment
-FROM node:18.20-slim AS runner
+FROM node:22-slim AS runner
 
 # Set the working directory
 WORKDIR /app
