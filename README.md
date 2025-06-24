@@ -1,4 +1,5 @@
 # . ./run.sh x.x.x
+```
 set -e  # Exit on error
 if [[ $# -eq 0 ]] ; then
     echo 'You need to provide the version'
@@ -25,3 +26,4 @@ echo "####################################"
 echo "Create new container with version $1"
 echo "####################################"
 docker run  -d --rm --name yahtzee -p 48071:3000 yahtzee:$1
+```
